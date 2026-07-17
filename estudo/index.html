@@ -1,0 +1,445 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0d1219"><title>Física 3 · P3 — Estudo Interativo</title>
+<style>
+  :root{
+    --bg:#e9edf3; --surface:#ffffff; --surface-2:#f3f6fa; --raise:#ffffff;
+    --ink:#152029; --muted:#556572; --faint:#8695a3;
+    --line:#dbe2ea; --line-2:#e8edf3;
+    --accent:#0e78be; --accent-2:#0a5f97; --accent-soft:#e4f1fb; --accent-ink:#ffffff;
+    --amber:#b96f16; --amber-soft:#fbefd9;
+    --good:#12925a; --good-soft:#e2f5eb;
+    --bad:#c4432b; --bad-soft:#fbe7e1;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --shadow:0 1px 2px rgba(16,30,45,.04),0 10px 30px -18px rgba(16,30,45,.28);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d1219; --surface:#151d27; --surface-2:#1b2531; --raise:#1e2937;
+      --ink:#e9eff5; --muted:#93a2b3; --faint:#5f6d7c;
+      --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.06);
+      --accent:#48b2ea; --accent-2:#6cc2f0; --accent-soft:rgba(72,178,234,.14); --accent-ink:#06222f;
+      --amber:#f0a742; --amber-soft:rgba(240,167,66,.15);
+      --good:#4fd18b; --good-soft:rgba(79,209,139,.15);
+      --bad:#f0745c; --bad-soft:rgba(240,116,92,.15);
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 22px 55px -28px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#e9edf3; --surface:#ffffff; --surface-2:#f3f6fa; --raise:#ffffff;
+    --ink:#152029; --muted:#556572; --faint:#8695a3;
+    --line:#dbe2ea; --line-2:#e8edf3;
+    --accent:#0e78be; --accent-2:#0a5f97; --accent-soft:#e4f1fb; --accent-ink:#ffffff;
+    --amber:#b96f16; --amber-soft:#fbefd9; --good:#12925a; --good-soft:#e2f5eb;
+    --bad:#c4432b; --bad-soft:#fbe7e1;
+    --shadow:0 1px 2px rgba(16,30,45,.04),0 10px 30px -18px rgba(16,30,45,.28);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1219; --surface:#151d27; --surface-2:#1b2531; --raise:#1e2937;
+    --ink:#e9eff5; --muted:#93a2b3; --faint:#5f6d7c;
+    --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.06);
+    --accent:#48b2ea; --accent-2:#6cc2f0; --accent-soft:rgba(72,178,234,.14); --accent-ink:#06222f;
+    --amber:#f0a742; --amber-soft:rgba(240,167,66,.15); --good:#4fd18b; --good-soft:rgba(79,209,139,.15);
+    --bad:#f0745c; --bad-soft:rgba(240,116,92,.15);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 22px 55px -28px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .app{
+    min-height:100dvh; background:
+      radial-gradient(130% 60% at 50% -8%, var(--accent-soft), transparent 60%),
+      var(--bg);
+    color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:0 16px}
+
+  /* top bar */
+  .top{padding:20px 0 6px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--faint)}
+  .top h1{margin:3px 0 0; font-size:20px; font-weight:750; letter-spacing:-.02em}
+  .top h1 b{color:var(--accent)}
+  .themebtn{flex:none; width:38px; height:38px; border-radius:11px; border:1px solid var(--line); background:var(--surface); color:var(--muted); cursor:pointer; font-size:16px; display:grid; place-items:center}
+  .themebtn:hover{color:var(--ink); border-color:var(--accent)}
+
+  /* overall progress */
+  .ovr{display:flex; align-items:center; gap:11px; margin:12px 0 2px}
+  .ovr .bar{flex:1; height:6px; border-radius:99px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line-2)}
+  .ovr .bar>i{display:block; height:100%; width:0; border-radius:99px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .4s cubic-bezier(.2,.7,.2,1)}
+  .ovr .pct{font-family:var(--mono); font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+  /* tabs */
+  .tabs{display:flex; gap:7px; overflow-x:auto; padding:14px 0 4px; scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none; display:flex; align-items:center; gap:7px; font-family:var(--mono); font-size:12.5px; letter-spacing:.02em;
+    color:var(--muted); background:var(--surface); border:1px solid var(--line); padding:8px 13px; border-radius:999px; cursor:pointer; transition:.15s; white-space:nowrap}
+  .tab:hover{border-color:var(--accent); color:var(--ink)}
+  .tab[aria-selected="true"]{background:var(--accent); color:var(--accent-ink); border-color:var(--accent); font-weight:650}
+  .tab .dot{width:15px; height:15px; border-radius:50%; border:1.5px solid currentColor; opacity:.5; display:grid; place-items:center; font-size:9px}
+  .tab.done .dot{opacity:1; background:var(--good); border-color:var(--good); color:#fff}
+  .tab[aria-selected="true"].done .dot{background:#fff; border-color:#fff; color:var(--good)}
+
+  main{padding:8px 0 60px}
+
+  /* question head */
+  .qhead{margin:14px 2px 4px}
+  .qhead .qmeta{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+  .qhead .qnum{font-family:var(--mono); font-weight:700; font-size:12px; color:var(--accent-ink); background:var(--accent); border-radius:8px; padding:4px 9px; letter-spacing:.02em}
+  .qhead h2{margin:8px 0 0; font-size:24px; font-weight:760; letter-spacing:-.02em; text-wrap:balance}
+  .qhead .pts{font-family:var(--mono); font-size:11px; color:var(--faint); text-transform:uppercase; letter-spacing:.05em}
+  .qprog{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-left:auto}
+
+  .enun{background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:12px; padding:13px 16px; margin:12px 0 18px; box-shadow:var(--shadow)}
+  .enun .lbl{font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; display:block; margin-bottom:5px}
+  .enun p{margin:0; font-size:14.5px; line-height:1.58; color:var(--muted)}
+  .enun b{color:var(--ink); font-weight:650}
+
+  /* step */
+  .step{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin:11px 0; box-shadow:var(--shadow); transition:border-color .2s}
+  .step.done{border-color:color-mix(in srgb,var(--good) 45%,var(--line))}
+  .step-head{display:flex; align-items:center; gap:10px}
+  .badge{flex:none; font-family:var(--mono); font-weight:700; font-size:12px; min-width:30px; height:24px; padding:0 7px; border-radius:7px; display:grid; place-items:center; background:var(--accent-soft); color:var(--accent)}
+  .step.done .badge{background:var(--good-soft); color:var(--good)}
+  .step-title{font-size:15.5px; font-weight:650; letter-spacing:-.01em; flex:1}
+  .step-check-ic{flex:none; color:var(--good); font-size:15px; opacity:0; transition:.2s}
+  .step.done .step-check-ic{opacity:1}
+
+  .prompt{font-size:13.5px; line-height:1.55; color:var(--muted); margin:9px 0 0; padding:9px 12px; background:var(--surface-2); border-radius:10px; border:1px dashed var(--line)}
+  .prompt b{color:var(--ink)}
+
+  /* numeric check */
+  .check{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center}
+  .check input{flex:1; min-width:140px; font-family:var(--mono); font-size:14px; color:var(--ink); background:var(--raise); border:1.5px solid var(--line); border-radius:10px; padding:9px 12px; outline:none; transition:.15s}
+  .check input:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+  .check input.ok{border-color:var(--good); box-shadow:0 0 0 3px var(--good-soft)}
+  .check input.no{border-color:var(--bad); box-shadow:0 0 0 3px var(--bad-soft)}
+  .check .unit{font-family:var(--mono); font-size:12px; color:var(--faint)}
+  .btn{font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); border-radius:10px; padding:9px 14px; transition:.15s}
+  .btn:hover{border-color:var(--accent)}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn.ghost{background:transparent; color:var(--muted)}
+  .btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .feedback{font-family:var(--mono); font-size:12.5px; margin-top:8px; min-height:1px; font-weight:600}
+  .feedback.ok{color:var(--good)} .feedback.no{color:var(--amber)}
+
+  .actions{margin-top:11px; display:flex; gap:8px; flex-wrap:wrap}
+
+  /* reveal */
+  .reveal{display:grid; grid-template-rows:0fr; transition:grid-template-rows .34s cubic-bezier(.3,.7,.3,1)}
+  .reveal.open{grid-template-rows:1fr}
+  .reveal>.inner{overflow:hidden; min-height:0}
+  .sol{padding:13px 14px 3px}
+  .sol p{margin:5px 0; font-size:14px; line-height:1.62; color:var(--muted)}
+  .sol p b{color:var(--ink); font-weight:650}
+  .sol .m{font-family:var(--mono); font-size:13.5px; line-height:1.7; color:var(--ink); background:var(--surface-2); border:1px solid var(--line-2); border-radius:9px; padding:8px 11px; margin:7px 0; overflow-x:auto; font-variant-numeric:tabular-nums; white-space:pre-wrap}
+  .sol em{font-style:normal; font-weight:700; color:var(--accent)}
+  .res{display:inline-block; font-family:var(--mono); font-weight:700; font-size:14px; color:var(--good); background:var(--good-soft); border:1px solid color-mix(in srgb,var(--good) 40%,transparent); border-radius:9px; padding:6px 13px; margin:6px 0 4px}
+  .tip{font-size:12.5px; color:var(--faint); font-style:italic; margin-top:6px}
+  sub{font-size:.72em} sup{font-size:.72em}
+
+  /* info / plano */
+  .info{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px; box-shadow:var(--shadow)}
+  .info h3{margin:0 0 10px; font-size:16px; display:flex; gap:8px; align-items:center}
+  .plan-list{list-style:none; margin:0; padding:0; counter-reset:p}
+  .plan-list li{counter-increment:p; position:relative; padding:9px 0 9px 40px; border-bottom:1px solid var(--line-2); font-size:14.5px; color:var(--muted)}
+  .plan-list li:last-child{border-bottom:none}
+  .plan-list li::before{content:counter(p); position:absolute; left:0; top:8px; width:26px; height:26px; border-radius:8px; background:var(--accent-soft); color:var(--accent); font-family:var(--mono); font-weight:700; font-size:13px; display:grid; place-items:center}
+  .plan-list li b{color:var(--ink)}
+  .plan-list li.skip::before{background:var(--bad-soft); color:var(--bad)}
+  .win{margin-top:14px; background:var(--good-soft); border:1px solid color-mix(in srgb,var(--good) 35%,transparent); color:var(--good); border-radius:11px; padding:11px 14px; font-weight:650; font-size:14px}
+  .infonote{margin-top:14px; font-size:13px; color:var(--muted); line-height:1.6}
+  .infonote b{color:var(--ink)}
+  .chk{list-style:none; margin:6px 0 0; padding:0}
+  .chk li{padding:7px 0; border-bottom:1px solid var(--line-2); font-size:14px; color:var(--muted); display:flex; gap:9px}
+  .chk li:last-child{border-bottom:none}
+  .chk li::before{content:"✓"; color:var(--good); font-weight:700; flex:none}
+  .chk b{color:var(--ink)}
+
+  .foot{display:flex; justify-content:center; margin-top:22px}
+
+  @media (max-width:520px){
+    .qhead h2{font-size:20px}
+    .top h1{font-size:18px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important}
+    .reveal{transition:none}
+  }
+</style>
+
+<div class="app">
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <div class="eyebrow">Física 3 · UnB · Prof. Fábio · 3ª Prova</div>
+        <h1>Estudo <b>passo a passo</b></h1>
+      </div>
+      <button class="themebtn" id="themebtn" title="Alternar tema" aria-label="Alternar tema">◐</button>
+    </header>
+
+    <div class="ovr">
+      <div class="bar"><i id="ovrfill"></i></div>
+      <span class="pct" id="ovrpct">0%</span>
+    </div>
+
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Questões"></nav>
+
+    <main id="stage" role="tabpanel"></main>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id:"plano", tag:"Plano", title:"Plano de ataque (~2 h)", kind:"info",
+    plan:[
+      {t:"<b>Q3 (corrente)</b> — só plugar número. ~2,5 pts quase garantidos. Comece por ela."},
+      {t:"<b>Q1 (capacitância, a 'fácil')</b> — receita Gauss → ΔV → C."},
+      {t:"<b>Extra</b> — duas deduções curtas (1,0 pt)."},
+      {t:"<b>Q2 (dielétricos)</b> — pegue os cálculos (b, c, d) e faça o desenho."},
+      {t:"<b>Sacrifique a Q4</b> (dedução do Drude) se o tempo apertar.", skip:true},
+    ],
+    win:"Só Q3 + Q1 = 5,0 → já passa. O resto é margem.",
+    note:"Como usar: abra cada questão, <b>tente o passo de cabeça</b>, digite sua conta nas etapas com campo de resposta (ele confere), e só então toque em <b>Revelar</b>. Seu progresso fica salvo neste aparelho."
+  },
+
+  {
+    id:"q1", tag:"Q1", title:"Capacitância — a \"fácil\"", pts:"2,5 pts",
+    enun:"Duas placas planas paralelas idênticas, área <b>A</b>, cargas <b>+Q</b> e <b>−Q</b>, separadas por <b>D</b> (com <b>D ≪ √A</b>). Pede: (a) campo por Lei de Gauss; (b) potencial V(z) com z=0 no meio; (c) capacitância C. Receita fixa: <b>Gauss → E · integral → ΔV · C = Q/ΔV</b>.",
+    steps:[
+      {b:"a", title:"Campo elétrico (Lei de Gauss)",
+       prompt:"Tente: some/cancele o campo σ/2ε₀ de cada placa. Quanto vale E <b>entre</b> as placas? E <b>fora</b> delas?",
+       sol:"<p>Densidade σ = Q/A. Cada placa cria σ/2ε₀.</p><p class='m'><em>Fora:</em> os campos se cancelam ⇒ <b>E<sub>out</sub> = 0</b>\n<em>Entre:</em> se somam ⇒ <b>E<sub>in</sub> = σ/ε₀ = Q/(ε₀A)</b></p><p class='tip'>Gauss formal: cilindro com 1 tampa dentro do condutor (E=0) e outra entre as placas → E·A = σA/ε₀.</p>"},
+      {b:"b", title:"Potencial V(z), com z = 0 no meio",
+       prompt:"Use E = −dV/dz e integre de 0 até z (com V(0)=0). Qual V(z)? E a ddp total ΔV?",
+       sol:"<p class='m'>V(z) = −∫E dz = −E·z ⇒ <b>V(z) = −(Q/ε₀A)·z</b>\n(válido −D/2 ≤ z ≤ D/2)\nddp: <b>ΔV = E·D = QD/(ε₀A)</b></p>"},
+      {b:"c", title:"Capacitância", check:{a:null},
+       prompt:"Junte tudo: C = Q/|ΔV|. Repare que o Q some.",
+       sol:"<p class='m'>C = Q ÷ [QD/(ε₀A)]</p><span class='res'>C = ε₀ A / D</span><p class='tip'>O Q sempre se cancela — só sobra geometria.</p>"},
+      {b:"coax", title:"Variante: cabo coaxial (se cair)",
+       prompt:"Mesma receita para fio raio a (+Q) e casca raio b (−Q), comprimento ℓ. Lembra do campo 2kλ/r?",
+       sol:"<p class='m'><em>(a)</em> linhas radiais do fio(+) p/ casca(−), só entre a e b\n<em>(b)</em> Gauss: E·2πrℓ = Q/ε₀ ⇒ E = 2kλ/r\n<em>(c)</em> |ΔV| = ∫ₐᵇ E dr = 2kλ·ln(b/a)\n<em>(d)</em> C = Q/|ΔV| ⇒</p><span class='res'>C = ℓ / [2k·ln(b/a)] = 2πε₀ℓ/ln(b/a)</span>"},
+    ]
+  },
+
+  {
+    id:"q2", tag:"Q2", title:"Dielétricos — calcular e desenhar", pts:"2,5 pts",
+    enun:"Placas circulares de raio <b>R = 5 cm</b>, cilindro de madeira de espessura <b>h = 0,5 mm</b> e <b>κ = 3,5</b>. Pilha <b>fem = 1,5 V</b>. Rigidez dielétrica da madeira <b>16 kV/mm</b>. Pede: (a) mostrar C = κε₀πR²/h; (b) C numérico; (c) carga máxima; (d) ddp máxima. <b>Não esqueça de DESENHAR</b> as placas com o dielétrico e as linhas de campo.",
+    steps:[
+      {b:"a", title:"Mostrar que C = κ·ε₀·(πR²)/h",
+       prompt:"Com dielétrico o campo cai por κ. Escreva E, depois ΔV = E·h, depois C = Q/ΔV.",
+       sol:"<p class='m'>E = E₀/κ = Q/(κε₀A)\nΔV = E·h = Qh/(κε₀A)\nC = Q/ΔV = κε₀A/h,  com A = πR² ⇒</p><span class='res'>C = κ ε₀ (πR²) / h</span>"},
+      {b:"b", title:"Valor numérico de C", check:{a:4.9e-10, tol:0.15, unit:"F", ph:"ex: 4.9e-10"},
+       prompt:"Plugue: κ=3,5 · ε₀=8,854×10⁻¹² · πR²=7,85×10⁻³ m² · h=5×10⁻⁴ m. Dá em F.",
+       sol:"<p class='m'>C = 3,5 × 8,854×10⁻¹² × 7,85×10⁻³ ÷ (5×10⁻⁴)</p><span class='res'>C ≈ 4,9×10⁻¹⁰ F = 0,49 nF</span>"},
+      {b:"c", title:"Carga máxima com a pilha (1,5 V)", check:{a:7.3e-10, tol:0.15, unit:"C", ph:"ex: 7.3e-10"},
+       prompt:"Carga num capacitor: Q = C·V, com V = 1,5 V.",
+       sol:"<p class='m'>Q = C·V = 4,9×10⁻¹⁰ × 1,5</p><span class='res'>Q ≈ 7,3×10⁻¹⁰ C = 0,73 nC</span>"},
+      {b:"d", title:"Máxima ddp sem queimar", check:{a:8000, tol:0.05, unit:"V", ph:"ex: 8000"},
+       prompt:"A rigidez é o campo máximo antes de faiscar. V_max = E_rig·d, com d = 0,5 mm.",
+       sol:"<p class='m'>V<sub>max</sub> = E<sub>rig</sub>·d = 16 kV/mm × 0,5 mm</p><span class='res'>V<sub>max</sub> = 8 kV (8000 V)</span>"},
+      {b:"var", title:"Variante: cilíndrico + titanato (κ=233)",
+       prompt:"Se cair o coaxial: acha C₀ do cilíndrico e multiplica por κ.",
+       sol:"<p class='m'>(a) C₀ = 2πε₀ℓ/ln(b/a) ≈ 16,5 pF\n(b) C = κC₀ = 233 × 16,5 pF ≈ <b>3,8 nF</b>\n(c) campo máx em r=a ⇒ V<sub>max</sub> = E<sub>rig</sub>·a·ln(b/a)</p>"},
+    ]
+  },
+
+  {
+    id:"q3", tag:"Q3", title:"Corrente e velocidade de drift", pts:"2,5 pts · melhor aposta",
+    enun:"Fio de cobre, <b>A = 3,31×10⁻⁶ m²</b>, corrente <b>i = 10 A</b>. Dados: ρ<sub>massa</sub>=8,92 g/cm³, M=63,5 g/mol, N<sub>A</sub>=6,02×10²³, e=1,6×10⁻¹⁹ C. Pede: (a) densidade η de elétrons; (b) velocidade de drift v<sub>d</sub>; (c) por que a lâmpada acende na hora.",
+    steps:[
+      {b:"a", title:"Densidade η de elétrons de condução", check:{a:8.5e28, tol:0.15, unit:"e⁻/m³", ph:"ex: 8.5e28"},
+       prompt:"1 elétron por átomo: η = ρ·N_A/M. Cuidado nas unidades: ρ=8,92×10³ kg/m³, M=63,5×10⁻³ kg/mol.",
+       sol:"<p class='m'>η = (8,92×10³ × 6,02×10²³) ÷ (63,5×10⁻³)</p><span class='res'>η ≈ 8,5×10²⁸ elétrons/m³</span>"},
+      {b:"b", title:"Velocidade de drift v_d", check:{a:2.2e-4, tol:0.2, unit:"m/s", ph:"ex: 2.2e-4"},
+       prompt:"De i = η·A·v_d·e, isole v_d = i/(η·A·e). Use η do passo anterior.",
+       sol:"<p class='m'>v_d = 10 ÷ (8,5×10²⁸ × 3,31×10⁻⁶ × 1,6×10⁻¹⁹)\n= 10 / (4,5×10⁴)</p><span class='res'>v_d ≈ 2,2×10⁻⁴ m/s (~0,2 mm/s!)</span>"},
+      {b:"c", title:"Por que a lâmpada acende na hora?",
+       prompt:"Se v_d é ~0,2 mm/s, o que faz a lâmpada acender instantaneamente? (dica: não são os elétrons que 'viajam')",
+       sol:"<p>O que se propaga pelo fio é o <b>campo elétrico</b>, a quase a <b>velocidade da luz</b>. Ele põe <b>todos</b> os elétrons do circuito em movimento quase ao mesmo tempo — não é um elétron que viaja do interruptor até a lâmpada.</p>"},
+    ]
+  },
+
+  {
+    id:"q4", tag:"Q4", title:"Resistência e resistividade", pts:"2,5 pts · a mais difícil",
+    enun:"Material ôhmico. (a) Com as 2 leis de Ohm + o MUV do elétron entre choques (Drude), <b>mostrar que ρ = m/(η e² τ)</b>. (b) Estimar τ do cobre (ρ = 1,7×10⁻⁸ Ω·m). O professor só mandou ler o capítulo — <b>deixe por último.</b>",
+    steps:[
+      {b:"a1", title:"Lado macroscópico → J = E/ρ",
+       prompt:"Combine R = ρL/A com J = i/A e ddp = E·L. Chegue em J em função de E e ρ.",
+       sol:"<p class='m'>J = i/A = ddp/(R·A) = ddp/(ρL)   [R·A = ρL]\nddp = E·L ⇒ J = E·L/(ρL)</p><p class='m'><b>J = E/ρ</b>   … (i)</p>"},
+      {b:"a2", title:"Lado microscópico (Drude) → resultado",
+       prompt:"MUV entre choques: v = v₀ − (eE/m)t. Tire a média (⟨v₀⟩=0, ⟨t⟩=τ), monte J = ηe⟨v⟩ e compare com (i).",
+       sol:"<p class='m'>⟨v⟩ = eEτ/m\nJ = η·e·⟨v⟩ = (ηe²τ/m)·E   … (ii)\n(i)=(ii): 1/ρ = ηe²τ/m ⇒</p><span class='res'>ρ = m / (η e² τ)</span>"},
+      {b:"b", title:"Estimar τ do cobre", check:{a:2.5e-14, tol:0.2, unit:"s", ph:"ex: 2.5e-14"},
+       prompt:"Isole τ = m/(η e² ρ). Use m=9,11×10⁻³¹, η=8,5×10²⁸, e=1,6×10⁻¹⁹, ρ=1,7×10⁻⁸.",
+       sol:"<p class='m'>τ = 9,11×10⁻³¹ ÷ (8,5×10²⁸ × (1,6×10⁻¹⁹)² × 1,7×10⁻⁸)</p><span class='res'>τ ≈ 2,5×10⁻¹⁴ s</span>"},
+    ]
+  },
+
+  {
+    id:"ex", tag:"Extra", title:"Extra — série e paralelo", pts:"1,0 pt",
+    enun:"Demonstração dos capacitores em série e em paralelo. A chave: <b>paralelo</b> → mesma ddp, cargas somam; <b>série</b> → mesma carga, ddps somam.",
+    steps:[
+      {b:"1", title:"Paralelo (C_p = C₁ + C₂)",
+       prompt:"Os dois têm a mesma ddp ℰ. Some as cargas e divida por ℰ.",
+       sol:"<p class='m'>Q = Q₁ + Q₂ = C₁ℰ + C₂ℰ = (C₁+C₂)ℰ\nQ = C_p·ℰ ⇒</p><span class='res'>C_p = C₁ + C₂  (maior que qualquer um)</span>"},
+      {b:"2", title:"Série (1/C_s = 1/C₁ + 1/C₂)",
+       prompt:"A carga Q é a MESMA nos dois. Some as ddps: ℰ = Q/C₁ + Q/C₂.",
+       sol:"<p class='m'>ℰ = Q/C₁ + Q/C₂ = Q(1/C₁ + 1/C₂)\nℰ = Q/C_s ⇒</p><span class='res'>1/C_s = 1/C₁ + 1/C₂ ⇒ C_s = C₁C₂/(C₁+C₂)</span>"},
+      {b:"3", title:"Ordenação C_s < C₁ < C₂ < C_p",
+       prompt:"Dado C₁<C₂, mostre por que a série fica abaixo do menor e o paralelo acima do maior.",
+       sol:"<p class='m'><em>Paralelo:</em> C_p = C₁+C₂ > C₂ ✓\n<em>Série:</em> C_s = C₁C₂/(C₁+C₂); C₂/(C₁+C₂) < 1 ⇒ C_s < C₁ ✓</p><span class='res'>C_s < C₁ < C₂ < C_p</span>"},
+    ],
+    checklist:[
+      "η cobre = <b>8,5×10²⁸</b> · v<sub>d</sub> = <b>2,2×10⁻⁴ m/s</b> · τ = <b>2,5×10⁻¹⁴ s</b>",
+      "C placas = <b>ε₀A/d</b> · com dielétrico <b>×κ</b> · V<sub>max</sub> = <b>E<sub>rig</sub>·d</b>",
+      "Paralelo <b>soma C</b> · série <b>soma 1/C</b>",
+      "Toda resposta com <b>justificativa</b> — sem justificar não vale ponto!"
+    ]
+  },
+];
+
+// ---------- state ----------
+const LS = "estudo-p3-v1";
+let state = load();
+let current = state.current || "plano";
+
+function load(){ try{ return JSON.parse(localStorage.getItem(LS)) || {done:{}}; }catch(e){ return {done:{}}; } }
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} }
+function keyOf(q,i){ return q+":"+i; }
+function isDone(q,i){ return !!(state.done && state.done[keyOf(q,i)]); }
+function setDone(q,i,v){ state.done = state.done||{}; if(v) state.done[keyOf(q,i)]=1; else delete state.done[keyOf(q,i)]; save(); }
+
+function stepCount(q){ return (q.steps||[]).length; }
+function doneCount(q){ let n=0; (q.steps||[]).forEach((_,i)=>{ if(isDone(q.id,i)) n++; }); return n; }
+function qIsComplete(q){ return q.kind==="info" ? !!(state.done&&state.done["plano:seen"]) : (stepCount(q)>0 && doneCount(q)===stepCount(q)); }
+
+function overall(){
+  let tot=0, dn=0;
+  QUESTIONS.forEach(q=>{ if(q.steps){ tot+=q.steps.length; dn+=doneCount(q); } });
+  return tot? Math.round(dn/tot*100):0;
+}
+
+// ---------- render ----------
+const $=s=>document.querySelector(s);
+const tabsEl=$("#tabs"), stageEl=$("#stage");
+
+function renderTabs(){
+  tabsEl.innerHTML="";
+  QUESTIONS.forEach(q=>{
+    const b=document.createElement("button");
+    b.className="tab"+(qIsComplete(q)?" done":"");
+    b.setAttribute("role","tab");
+    b.setAttribute("aria-selected", q.id===current?"true":"false");
+    const dot = q.steps? '<span class="dot">'+(qIsComplete(q)?'✓':(doneCount(q)||''))+'</span>' : '';
+    b.innerHTML = dot+q.tag;
+    b.onclick=()=>{ current=q.id; state.current=q.id; save(); renderAll(); stageEl.scrollIntoView({behavior:"smooth",block:"start"}); };
+    tabsEl.appendChild(b);
+  });
+}
+
+function renderOverall(){ $("#ovrfill").style.width=overall()+"%"; $("#ovrpct").textContent=overall()+"%"; }
+
+function renderStage(){
+  const q=QUESTIONS.find(x=>x.id===current);
+  if(q.kind==="info"){ renderInfo(q); return; }
+  let html='<div class="qhead"><div class="qmeta"><span class="qnum">'+q.tag+'</span><span class="pts">'+q.pts+'</span><span class="qprog">'+doneCount(q)+'/'+stepCount(q)+' passos</span></div><h2>'+q.title+'</h2></div>';
+  html+='<div class="enun"><span class="lbl">Enunciado</span><p>'+q.enun+'</p></div>';
+  q.steps.forEach((s,i)=>{ html+=stepHTML(q,s,i); });
+  if(q.checklist){
+    html+='<div class="info" style="margin-top:18px"><h3>✅ Checklist de 5 min antes de entrar</h3><ul class="chk">'+q.checklist.map(c=>'<li>'+c+'</li>').join('')+'</ul></div>';
+  }
+  html+='<div class="foot"><button class="btn ghost" id="resetbtn">Zerar meu progresso</button></div>';
+  stageEl.innerHTML=html;
+  wireStage(q);
+}
+
+function stepHTML(q,s,i){
+  const done=isDone(q.id,i);
+  let h='<div class="step'+(done?' done':'')+'" data-i="'+i+'">';
+  h+='<div class="step-head"><span class="badge">'+s.b+'</span><span class="step-title">'+s.title+'</span><span class="step-check-ic">✓</span></div>';
+  h+='<div class="prompt">'+s.prompt+'</div>';
+  if(s.check && s.check.a!=null){
+    h+='<div class="check"><input type="text" inputmode="text" placeholder="'+s.check.ph+'" data-i="'+i+'" aria-label="sua resposta"><span class="unit">'+s.check.unit+'</span><button class="btn primary chkbtn" data-i="'+i+'">Conferir</button></div>';
+    h+='<div class="feedback" data-i="'+i+'"></div>';
+  }
+  h+='<div class="actions"><button class="btn revbtn" data-i="'+i+'">'+(done?'Ocultar resolução':'Revelar passo')+'</button></div>';
+  h+='<div class="reveal'+(done?' open':'')+'" data-i="'+i+'"><div class="inner"><div class="sol">'+s.sol+'</div></div></div>';
+  h+='</div>';
+  return h;
+}
+
+function renderInfo(q){
+  let html='<div class="qhead"><div class="qmeta"><span class="qnum">'+q.tag+'</span></div><h2>'+q.title+'</h2></div>';
+  html+='<div class="info"><h3>⚡ Ordem por retorno / tempo</h3><ul class="plan-list">'+q.plan.map(p=>'<li class="'+(p.skip?'skip':'')+'">'+p.t+'</li>').join('')+'</ul>';
+  html+='<div class="win">'+q.win+'</div><div class="infonote">'+q.note+'</div></div>';
+  html+='<div class="foot"><button class="btn primary" id="startbtn">Começar pela Q3 →</button></div>';
+  stageEl.innerHTML=html;
+  state.done=state.done||{}; state.done["plano:seen"]=1; save();
+  $("#startbtn").onclick=()=>{ current="q3"; state.current="q3"; save(); renderAll(); window.scrollTo({top:0,behavior:"smooth"}); };
+}
+
+function wireStage(q){
+  stageEl.querySelectorAll(".revbtn").forEach(btn=>btn.onclick=()=>{
+    const i=+btn.dataset.i, rev=stageEl.querySelector('.reveal[data-i="'+i+'"]');
+    const open=rev.classList.toggle("open");
+    setDone(q.id,i,open);
+    btn.textContent = open? "Ocultar resolução":"Revelar passo";
+    stageEl.querySelector('.step[data-i="'+i+'"]').classList.toggle("done",open);
+    refreshCounts(q);
+  });
+  stageEl.querySelectorAll(".chkbtn").forEach(btn=>btn.onclick=()=>doCheck(q,+btn.dataset.i));
+  stageEl.querySelectorAll('.check input').forEach(inp=>inp.addEventListener("keydown",e=>{ if(e.key==="Enter") doCheck(q,+inp.dataset.i); }));
+  const rb=$("#resetbtn"); if(rb) rb.onclick=()=>{ if(confirm("Zerar todo o progresso salvo?")){ state={done:{},current:current}; save(); renderAll(); } };
+}
+
+function refreshCounts(q){
+  const pr=stageEl.querySelector(".qprog"); if(pr) pr.textContent=doneCount(q)+'/'+stepCount(q)+' passos';
+  renderTabs(); renderOverall();
+}
+
+function parseNum(s){
+  if(!s) return NaN;
+  s=(""+s).trim().toLowerCase().replace(/,/g,".").replace(/\s+/g,"");
+  s=s.replace(/[·x×*]10\^?/g,"e").replace(/\^/g,"");
+  return parseFloat(s);
+}
+function doCheck(q,i){
+  const inp=stageEl.querySelector('.check input[data-i="'+i+'"]');
+  const fb=stageEl.querySelector('.feedback[data-i="'+i+'"]');
+  const chk=q.steps[i].check;
+  const val=parseNum(inp.value);
+  if(isNaN(val)){ inp.classList.remove("ok"); inp.classList.add("no"); fb.className="feedback no"; fb.textContent="Não entendi o número. Use ponto e 'e' p/ potência, ex: 8.5e28"; return; }
+  const rel=Math.abs(val-chk.a)/Math.abs(chk.a);
+  if(rel<=chk.tol){
+    inp.classList.remove("no"); inp.classList.add("ok");
+    fb.className="feedback ok"; fb.textContent="✓ Isso! Confere a resolução abaixo.";
+    const rev=stageEl.querySelector('.reveal[data-i="'+i+'"]');
+    if(!rev.classList.contains("open")){ rev.classList.add("open"); setDone(q.id,i,true);
+      stageEl.querySelector('.step[data-i="'+i+'"]').classList.add("done");
+      const rbtn=stageEl.querySelector('.revbtn[data-i="'+i+'"]'); if(rbtn) rbtn.textContent="Ocultar resolução";
+      refreshCounts(q);
+    }
+  }else{
+    inp.classList.remove("ok"); inp.classList.add("no");
+    fb.className="feedback no";
+    fb.textContent = rel<0.6 ? "Perto! Revê a conta (ordem de grandeza ok)." : "Ainda não. Tenta de novo ou toca em Revelar.";
+  }
+}
+
+function renderAll(){ renderTabs(); renderOverall(); renderStage(); }
+
+// theme toggle
+const root=document.documentElement;
+$("#themebtn").onclick=()=>{
+  const cur=root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  const next=cur==="dark"?"light":"dark";
+  root.setAttribute("data-theme",next);
+  try{ localStorage.setItem(LS+"-theme",next); }catch(e){}
+};
+try{ const t=localStorage.getItem(LS+"-theme"); if(t) root.setAttribute("data-theme",t); }catch(e){}
+
+renderAll();
+</script>
+</head><body></body></html>
