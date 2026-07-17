@@ -1,0 +1,495 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#15171c">
+<title>Flashcards — Física 3 · 3ª Prova</title>
+<style>
+  :root{
+    --ground:#15171c; --ground-2:#0e1014;
+    --surface:#1c1f27; --surface-2:#232734;
+    --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.06);
+    --ink:#edf0f5; --muted:#95a0b1; --faint:#6b7585;
+    --heat:#ff7a33; --heat-soft:rgba(255,122,51,.14);
+    --steel:#6fb0e0; --steel-soft:rgba(111,176,224,.13);
+    --good:#5fd694; --good-soft:rgba(95,214,148,.15);
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:var(--sans); color:var(--ink);
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(255,122,51,.10), transparent 55%),
+      radial-gradient(90% 70% at 90% 110%, rgba(111,176,224,.07), transparent 60%),
+      var(--ground);
+    display:flex; flex-direction:column; min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{width:100%; max-width:660px; margin:0 auto; padding:0 18px}
+
+  /* ---- header ---- */
+  header{padding-top:22px; padding-bottom:14px}
+  .brand{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+  .eb{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--faint)}
+  .brand h1{margin:0; font-size:19px; font-weight:650; letter-spacing:-.01em}
+  .brand h1 span{color:var(--muted); font-weight:500}
+  .chips{display:flex; gap:7px; margin-top:16px; flex-wrap:wrap}
+  .chips+.chips{margin-top:8px}
+  .chip{
+    font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    color:var(--muted); background:var(--surface); border:1px solid var(--line);
+    padding:7px 13px; border-radius:999px; cursor:pointer; transition:.16s;
+  }
+  .chip:hover{border-color:rgba(255,255,255,.22); color:var(--ink)}
+  .chip[aria-pressed="true"]{background:#fff; color:#15171c; border-color:#fff; font-weight:600}
+  .chip.ghost[aria-pressed="true"]{background:var(--steel-soft); color:var(--steel); border-color:rgba(111,176,224,.4)}
+  .chip.star{color:var(--heat); border-color:rgba(255,122,51,.4)}
+  .chip.star[aria-pressed="true"]{background:var(--heat); color:#1a0f06; border-color:var(--heat)}
+
+  .meter{display:flex; align-items:center; gap:12px; margin-top:16px}
+  .bar{flex:1; height:5px; border-radius:99px; background:var(--surface-2); overflow:hidden}
+  .bar>i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--heat),#ffb37a); border-radius:99px; transition:width .3s ease}
+  .count{font-family:var(--mono); font-size:12px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums}
+  .count b{color:var(--ink); font-weight:600}
+  .dom{font-family:var(--mono); font-size:11.5px; color:var(--good); white-space:nowrap}
+
+  /* ---- stage ---- */
+  main{flex:1; display:flex; align-items:center; justify-content:center; overflow:auto; padding:12px 0 6px}
+  .stage{width:100%; max-width:660px; padding:0 18px; perspective:1600px}
+  .card{position:relative; cursor:pointer; outline:none}
+  .card:focus-visible .inner{box-shadow:0 0 0 2px var(--heat), 0 24px 60px -28px rgba(0,0,0,.7)}
+  .inner{
+    display:grid; transform-style:preserve-3d; transition:transform .5s cubic-bezier(.2,.7,.2,1);
+    min-height:340px; border-radius:20px;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.75);
+  }
+  .card.flip .inner{transform:rotateY(180deg)}
+  .face{
+    grid-area:1/1; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));
+    border:1px solid var(--line); border-radius:20px; padding:26px 26px 24px;
+    display:flex; flex-direction:column; gap:16px; overflow-wrap:anywhere;
+  }
+  .face::before{content:""; position:absolute; inset:0 0 auto 0; height:3px; border-radius:20px 20px 0 0;
+    background:var(--accent,var(--heat)); opacity:.9}
+  .back{transform:rotateY(180deg)}
+  .card.c .face{--accent:var(--steel)}
+  .card.q .face{--accent:var(--heat)}
+
+  .tag{display:flex; align-items:center; justify-content:space-between; gap:10px}
+  .tag .lbl{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent,var(--heat)); font-weight:600}
+  .tag .side{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint)}
+
+  .term{font-size:24px; line-height:1.2; font-weight:650; letter-spacing:-.015em; text-wrap:balance; margin:auto 0}
+  .stem{font-size:16.5px; line-height:1.5; white-space:pre-line; font-weight:450}
+  .opts{list-style:none; margin:2px 0 0; padding:0; display:flex; flex-direction:column; gap:7px}
+  .opts li{display:flex; gap:10px; align-items:flex-start; font-size:14.5px; line-height:1.42; color:var(--muted)}
+  .opts .k{font-family:var(--mono); font-size:12.5px; color:var(--faint); padding-top:1px; min-width:16px}
+
+  .answer{font-size:16.5px; line-height:1.52; margin:auto 0; font-weight:450; white-space:pre-line}
+  .answer strong{color:var(--ink); font-weight:650}
+  .gab{display:flex; align-items:center; gap:12px}
+  .gab .letter{font-family:var(--mono); font-weight:700; font-size:22px; color:var(--good);
+    background:var(--good-soft); border:1px solid rgba(95,214,148,.35); border-radius:12px;
+    width:46px; height:46px; display:grid; place-items:center; flex:none}
+  .gab .txt{font-size:15.5px; line-height:1.4; font-weight:550}
+  .explain{font-size:15px; line-height:1.55; color:var(--muted)}
+  .explain b{color:var(--ink); font-weight:600}
+  .hint{margin-top:auto; font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--faint); display:flex; align-items:center; gap:6px}
+  .knownmark{position:absolute; top:16px; right:18px; font-size:12px; color:var(--good); font-family:var(--mono); letter-spacing:.1em; opacity:0; transition:.2s}
+  .card.known .knownmark{opacity:1}
+
+  .empty{width:100%; max-width:660px; text-align:center; padding:40px 24px; color:var(--muted)}
+  .empty .big{font-size:40px; margin-bottom:12px}
+
+  /* ---- controls ---- */
+  footer{padding:14px 0 max(18px,env(safe-area-inset-bottom))}
+  .nav{display:flex; align-items:center; gap:10px}
+  button{font-family:var(--sans); cursor:pointer; border:1px solid var(--line); color:var(--ink);
+    background:var(--surface); border-radius:13px; transition:.15s; font-size:14px}
+  button:hover{border-color:rgba(255,255,255,.25)}
+  button:focus-visible{outline:2px solid var(--heat); outline-offset:2px}
+  button:active{transform:translateY(1px)}
+  .arrow{width:52px; height:52px; font-size:20px; display:grid; place-items:center; flex:none; color:var(--muted)}
+  .flipbtn{flex:1; height:52px; font-weight:650; font-size:15.5px; letter-spacing:.01em;
+    background:var(--heat); color:#1a0f06; border-color:var(--heat)}
+  .flipbtn:hover{background:#ff8c4d; border-color:#ff8c4d}
+  .sub{display:flex; gap:9px; margin-top:11px; flex-wrap:wrap; justify-content:center}
+  .sub button{padding:9px 15px; font-size:13px; color:var(--muted); font-family:var(--mono); letter-spacing:.03em}
+  .sub button:hover{color:var(--ink)}
+  .sub button.on{background:var(--good-soft); border-color:rgba(95,214,148,.4); color:var(--good)}
+  .kbd{font-family:var(--mono); font-size:11px; color:var(--faint); text-align:center; margin-top:12px; letter-spacing:.03em}
+  .kbd b{color:var(--muted); font-weight:500}
+
+  @media (max-width:520px){
+    .term{font-size:21px}
+    .arrow{width:46px;height:50px}
+    .kbd{display:none}
+    .inner{min-height:320px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .inner{transition:none}
+    .bar>i{transition:none}
+  }
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <span class="eb">Física 3 · UnB · Prof. Fábio M. S. Lima</span>
+    </div>
+    <div class="brand" style="margin-top:4px">
+      <h1>3ª Prova <span>— capacitância · dielétricos · corrente · resistência</span></h1>
+    </div>
+    <div class="chips" role="group" aria-label="Filtrar por tipo">
+      <button class="chip" data-deck="all" aria-pressed="true">Tudo</button>
+      <button class="chip ghost" data-deck="c" aria-pressed="false">Conceitos</button>
+      <button class="chip" data-deck="q" aria-pressed="false">Questões</button>
+    </div>
+    <div class="chips" role="group" aria-label="Filtrar por assunto">
+      <button class="chip" data-pdeck="all" aria-pressed="true">Todos</button>
+      <button class="chip star" data-pdeck="p" aria-pressed="false">★ Provas reais</button>
+      <button class="chip" data-pdeck="1" aria-pressed="false">Capacitância</button>
+      <button class="chip" data-pdeck="2" aria-pressed="false">Dielétricos</button>
+      <button class="chip" data-pdeck="3" aria-pressed="false">Corrente</button>
+      <button class="chip" data-pdeck="4" aria-pressed="false">Resistência</button>
+    </div>
+    <div class="meter">
+      <span class="count">carta <b id="pos">1</b> / <span id="total">0</span></span>
+      <div class="bar"><i id="progfill"></i></div>
+      <span class="dom" id="dom">dominadas 0/0</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="stage">
+    <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard — toque para virar">
+      <span class="knownmark">✓ dominada</span>
+      <div class="inner">
+        <div class="face front" id="front"></div>
+        <div class="face back" id="back"></div>
+      </div>
+    </div>
+    <div class="empty" id="empty" hidden>
+      <div class="big">✓</div>
+      <div>Você dominou tudo neste filtro.<br>Troque o filtro ou reinicie para revisar de novo.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="nav">
+      <button class="arrow" id="prev" aria-label="Anterior">‹</button>
+      <button class="flipbtn" id="flip">Virar carta</button>
+      <button class="arrow" id="next" aria-label="Próxima">›</button>
+    </div>
+    <div class="sub">
+      <button id="know">Marcar "sei"</button>
+      <button id="hide">Esconder dominadas</button>
+      <button id="shuffle">Embaralhar</button>
+      <button id="reset">Reiniciar</button>
+    </div>
+    <div class="kbd"><b>←/→</b> navegar · <b>espaço</b> virar · <b>K</b> sei · <b>S</b> embaralhar</div>
+  </div>
+</footer>
+
+<script>
+const CARDS = [
+  // ============================================================
+  // ★ PROVAS REAIS — questões/deduções tiradas das P3 do Prof. Fábio
+  //   (1º sem/2025, 25/07 · 2º sem/2025, 15/12) + o EXTRA de cada uma
+  // ============================================================
+  {t:"c", p:"p", term:"Associação em PARALELO de capacitores",
+   ans:"Mesma <strong>ddp</strong> em todos; as cargas se somam.\n<strong>C_p = C₁ + C₂ + …</strong>\nO equivalente é <strong>maior</strong> que o maior capacitor. Dedução: C·ℰ = C₁·ℰ + C₂·ℰ ⇒ C_p = C₁ + C₂."},
+  {t:"c", p:"p", term:"Associação em SÉRIE de capacitores",
+   ans:"Mesma <strong>carga</strong> Q em todos; as ddps se somam (ℰ = ΔV₁ + ΔV₂).\n<strong>1/C_s = 1/C₁ + 1/C₂ + …</strong>\nPara dois: <strong>C_s = C₁·C₂/(C₁+C₂)</strong>. O equivalente é <strong>menor</strong> que o menor deles."},
+  {t:"c", p:"p", term:"Dois dielétricos LADO A LADO (cada um ocupa A/2)",
+   ans:"Dividir a <strong>área</strong> ⇒ dois capacitores em <strong>PARALELO</strong> (mesma ddp):\n<strong>C = (κ₁+κ₂)/2 · ε₀A/d</strong>.\nEssa foi a 3ª questão (1º sem): a pegadinha é reconhecer que lado a lado = paralelo."},
+  {t:"c", p:"p", term:"Dois dielétricos EMPILHADOS (espessuras D₁ e D₂)",
+   ans:"Dividir a <strong>distância</strong> ⇒ dois capacitores em <strong>SÉRIE</strong> (mesma carga):\n<strong>C = ε₀A / (D₁/κ₁ + D₂/κ₂)</strong>.\nEmpilhar dielétricos = série."},
+  {t:"c", p:"p", term:"Cabo coaxial carregado — onde há campo elétrico?",
+   ans:"<strong>Dentro do fio</strong> (r&lt;a): E = 0 (é condutor).\n<strong>Entre fio e casca</strong> (a&lt;r&lt;b): E = 2kλ/r, <strong>radial</strong>.\n<strong>Fora da casca</strong> (r&gt;b): E = 0 (carga total interna = +Q−Q = 0). Foi a 1ª questão do 2º sem (letra a)."},
+
+  {t:"q", p:"p", n:1, stem:"Capacitor de placas retangulares (área A) é preenchido por dois dielétricos κ₁ e κ₂, ocupando cada um metade da área (A/2), lado a lado. A capacitância total é:",
+   opts:[["A","(κ₁+κ₂)/2 · ε₀A/d"],["B","ε₀A / [d(κ₁+κ₂)]"],["C","κ₁κ₂/(κ₁+κ₂) · ε₀A/d"],["D","(κ₁+κ₂) · ε₀A/d"],["E","ε₀A/d (o dielétrico não muda nada)"]],
+   a:"A", at:"(κ₁+κ₂)/2 · ε₀A/d",
+   ex:"Lado a lado ⇒ <b>paralelo</b>: C = C₁ + C₂ = κ₁ε₀(A/2)/d + κ₂ε₀(A/2)/d = <b>(κ₁+κ₂)/2 · ε₀A/d</b>. A alternativa C seria o caso <i>empilhado</i> (série)."},
+  {t:"q", p:"p", n:2, stem:"Dados dois capacitores com C₁ < C₂, assinale a ordenação correta entre a associação em série (C_s) e em paralelo (C_p):",
+   opts:[["A","C_s < C₁ < C₂ < C_p"],["B","C_p < C₁ < C₂ < C_s"],["C","C₁ < C_s < C_p < C₂"],["D","C_s = C_p = (C₁+C₂)/2"]],
+   a:"A", at:"C_s < C₁ < C₂ < C_p",
+   ex:"O <b>EXTRA</b> do 1º sem. Em <b>paralelo</b> C_p = C₁+C₂ é maior que qualquer um. Em <b>série</b> C_s = C₁C₂/(C₁+C₂) é menor que o menor. Logo <b>C_s &lt; C₁ &lt; C₂ &lt; C_p</b>."},
+  {t:"q", p:"p", n:3, stem:"Uma junção soldada une dois fios do mesmo metal. A seção 1 tem área a e a seção 2 tem área A, com a < A, ambas percorridas pela mesma corrente i. Sobre as densidades de corrente:",
+   opts:[["A","J₁ > J₂"],["B","J₁ < J₂"],["C","J₁ = J₂"],["D","depende da resistividade do metal"],["E","J = 0 exatamente na solda"]],
+   a:"A", at:"J₁ > J₂ (a área menor tem J maior)",
+   ex:"O <b>EXTRA</b> do 2º sem. A corrente é a <b>mesma</b> (conservação de carga), e J = i/área. Como a &lt; A ⇒ <b>J₁ = i/a &gt; J₂ = i/A</b>. Menor área ⇒ maior densidade de corrente."},
+  {t:"q", p:"p", n:4, stem:"No cabo coaxial (fio +Q de raio a, casca −Q de raio b), a letra (b) pede o campo entre o fio e a casca por Lei de Gauss. O resultado é:",
+   opts:[["A","E = 2kλ/r, radial (λ = Q/ℓ)"],["B","E = kQ/r², radial"],["C","E = σ/ε₀, uniforme"],["D","E = 0 (região blindada)"]],
+   a:"A", at:"E = 2kλ/r (cilíndrico, radial)",
+   ex:"Gauss com cilindro coaxial: E·(2πrℓ) = Q_int/ε₀ ⇒ <b>E = 2kλ/r</b>, com λ = Q/ℓ. É o campo de simetria cilíndrica (∝ 1/r), não 1/r² (esférico)."},
+
+  // ============================================================
+  // BLOCO 1 — CAPACITÂNCIA
+  // ============================================================
+  // ---------- CONCEITOS ----------
+  {t:"c", p:1, term:"Capacitância — definição e unidade",
+   ans:"<strong>C ≡ Q / |ΔV|</strong> (Faraday, 1832). Razão entre a carga de uma placa e a ddp entre as placas.\nSó depende da <strong>geometria</strong> e do dielétrico — <strong>não</strong> de Q nem de V.\nUnidade: <strong>farad</strong> (1 F = 1 C/V); na prática pF, nF, μF."},
+  {t:"c", p:1, term:"Roteiro para achar C de qualquer capacitor",
+   ans:"<strong>1)</strong> Lei de Gauss → campo <strong>E</strong> entre os condutores.\n<strong>2)</strong> Integral de caminho <strong>ΔV = −∫E·dr</strong> → ddp.\n<strong>3)</strong> <strong>C = Q/|ΔV|</strong> — o Q se cancela e sobra só geometria.\nÉ a sequência exata das letras (a)(b)(c)(d) do Fábio."},
+  {t:"c", p:1, term:"Capacitor de placas planas paralelas — C",
+   ans:"Campo uniforme entre as placas: <strong>E = σ/ε₀</strong> (σ = Q/A).\nddp: ΔV = E·d = Qd/(ε₀A).\n<strong>C = ε₀A/d</strong>.\nMais área ⇒ mais C; mais distância ⇒ menos C."},
+  {t:"c", p:1, term:"Campo de um capacitor de placas planas (por que E = σ/ε₀?)",
+   ans:"Cada placa cria <strong>σ/2ε₀</strong>. <strong>Entre</strong> as placas os dois campos <strong>somam</strong> ⇒ E = σ/ε₀. <strong>Fora</strong> se <strong>cancelam</strong> ⇒ E = 0. Válido para D ≪ √A (placas 'grandes'). Prova: Gauss com cilindro atravessando uma placa."},
+  {t:"c", p:1, term:"Capacitor cilíndrico (cabo coaxial) — C",
+   ans:"Fio de raio a dentro de casca de raio b, comprimento ℓ. Campo radial E = 2kλ/r.\nΔV = 2kλ·ln(b/a).\n<strong>C = ℓ / [2k·ln(b/a)] = 2πε₀ℓ / ln(b/a)</strong>.\nSó depende da razão b/a e do comprimento."},
+  {t:"c", p:1, term:"Capacitor esférico — C",
+   ans:"Esfera interna raio a, casca externa raio b. Campo E = kQ/r².\nΔV = kQ(1/a − 1/b).\n<strong>C = 4πε₀ · ab/(b−a)</strong>.\nSe b → ∞: C = 4πε₀a = a/k (esfera isolada)."},
+  {t:"c", p:1, term:"Energia armazenada num capacitor",
+   ans:"<strong>U = ½ C V² = ½ Q²/C = ½ Q·V</strong>.\nA energia fica guardada no <strong>campo elétrico</strong>. Densidade de energia: <strong>u = ½ ε₀ E²</strong> (energia por volume)."},
+  {t:"c", p:1, term:"Constante de Coulomb k e ε₀ (valores)",
+   ans:"<strong>k = 1/(4πε₀) ≈ 8,99×10⁹ N·m²/C²</strong>.\n<strong>ε₀ = 8,854×10⁻¹² C²/(N·m²)</strong>.\nRelações: 2k = 1/(2πε₀); 4πε₀ = 1/k."},
+
+  // ---------- QUESTÕES ----------
+  {t:"q", p:1, n:5, stem:"Num capacitor de placas planas isolado (carga Q fixa), dobra-se a distância d entre as placas. O que acontece com C e com a ddp V?",
+   opts:[["A","C dobra e V cai à metade"],["B","C cai à metade e V dobra"],["C","C e V dobram"],["D","C e V caem à metade"],["E","nada muda"]],
+   a:"B", at:"C cai à metade, V dobra",
+   ex:"C = ε₀A/d ⇒ dobrar d deixa C <b>na metade</b>. Com Q fixo, V = Q/C ⇒ V <b>dobra</b>. (O campo E = σ/ε₀ não muda; a ddp = E·d é que cresce.)"},
+  {t:"q", p:1, n:6, stem:"Cabo coaxial a vácuo: fio de diâmetro 1 mm (a = 0,5 mm), camada de vácuo de 0,2 mm (b = 0,7 mm), comprimento ℓ = 10 cm. A capacitância C₀ ≈ (use 2πε₀ℓ/ln(b/a); ln 1,4 ≈ 0,34):",
+   opts:[["A","≈ 16,5 pF"],["B","≈ 1,65 pF"],["C","≈ 165 pF"],["D","≈ 1,65 nF"],["E","≈ 8,3 pF"]],
+   a:"A", at:"≈ 16,5 pF",
+   ex:"C₀ = 2πε₀ℓ/ln(b/a) = (5,56×10⁻¹¹ × 0,10)/0,34 ≈ <b>1,65×10⁻¹¹ F = 16,5 pF</b>. Era o item (a) da 2ª questão (1º sem)."},
+  {t:"q", p:1, n:7, stem:"Sobre o capacitor esférico (esfera a dentro de casca b), assinale a correta:",
+   opts:[["A","C = 4πε₀ · ab/(b−a)"],["B","C = 4πε₀ · (b−a)/(ab)"],["C","C = ε₀·4πab"],["D","C independe dos raios"],["E","C = k·ab"]],
+   a:"A", at:"C = 4πε₀ · ab/(b−a)",
+   ex:"Integrando E = kQ/r² de a até b: ΔV = kQ(1/a − 1/b) = kQ(b−a)/(ab). Logo C = Q/ΔV = <b>4πε₀ ab/(b−a)</b>. Quando b → ∞, vira 4πε₀a (esfera isolada)."},
+  {t:"q", p:1, n:8, stem:"Um capacitor de C = 2,0 μF é carregado sob V = 100 V. A energia armazenada é:",
+   opts:[["A","1,0×10⁻² J"],["B","2,0×10⁻² J"],["C","1,0×10⁻⁴ J"],["D","200 J"],["E","2,0×10⁻⁴ J"]],
+   a:"A", at:"U = ½CV² = 0,010 J",
+   ex:"U = ½CV² = ½ × 2,0×10⁻⁶ × (100)² = ½ × 2,0×10⁻⁶ × 10⁴ = <b>1,0×10⁻² J</b> (= 10 mJ)."},
+
+  // ============================================================
+  // BLOCO 2 — DIELÉTRICOS
+  // ============================================================
+  // ---------- CONCEITOS ----------
+  {t:"c", p:2, term:"Efeito de um dielétrico na capacitância",
+   ans:"Preencher o capacitor com dielétrico <strong>multiplica C por κ</strong>: <strong>C = κ·C₀</strong>.\nComo <strong>κ > 1</strong> para todo dielétrico, C <strong>sempre aumenta</strong>. κ = constante dielétrica do material (adimensional; vácuo κ = 1)."},
+  {t:"c", p:2, term:"Por que o dielétrico aumenta C?",
+   ans:"O dielétrico se <strong>polariza</strong> e cria um campo interno <strong>oposto</strong> ao original. O campo cai: <strong>E = E₀/κ</strong>. Menor E ⇒ menor ddp (V = E·d). Como C = Q/V (a Q fixo), <strong>C aumenta</strong>."},
+  {t:"c", p:2, term:"Carga de polarização σ_pol",
+   ans:"As faces do dielétrico ganham carga induzida <strong>σ_pol = σ(1 − 1/κ)</strong>.\nEla é <strong>menor</strong> que a carga livre: <strong>σ_pol &lt; σ</strong>. Por isso o campo interno não zera — apenas diminui de σ/ε₀ para (σ−σ_pol)/ε₀ = σ/(κε₀)."},
+  {t:"c", p:2, term:"Polarização (visão molecular)",
+   ans:"Sem campo: dipolos <strong>desalinhados</strong>. Com E₀: dipolos <strong>alinham parcialmente</strong> e criam <strong>E_ind</strong> contra E₀. Resultado: <strong>E_tot = E₀ − E_ind = E₀/κ</strong>. Materiais apolares polarizam por deslocamento da nuvem eletrônica."},
+  {t:"c", p:2, term:"Rigidez dielétrica / ruptura (breakdown)",
+   ans:"Campo máximo <strong>E_rig</strong> que o dielétrico aguenta antes de faiscar/conduzir. A ddp máxima segura:\n<strong>V_max = E_rig · d</strong>.\nEx.: ar ≈ 3 kV/mm; madeira ≈ 16 kV/mm. Acima disso, o capacitor 'queima'."},
+  {t:"c", p:2, term:"Capacitor de placas circulares com dielétrico",
+   ans:"Placas circulares de raio R, separação h, dielétrico κ:\n<strong>C = κ·ε₀·(πR²)/h</strong>.\nÉ o C = κε₀A/d com A = πR². (Modelo do capacitor 'rústico' do Faraday na 2ª questão do 2º sem.)"},
+
+  // ---------- QUESTÕES ----------
+  {t:"q", p:2, n:9, stem:"Capacitor de placas circulares R = 5,0 cm, cilindro de madeira de espessura h = 0,5 mm e κ = 3,5. A capacitância C = κε₀(πR²)/h vale ≈ (ε₀ = 8,85×10⁻¹²; πR² ≈ 7,85×10⁻³ m²):",
+   opts:[["A","≈ 0,49 nF (490 pF)"],["B","≈ 49 pF"],["C","≈ 4,9 nF"],["D","≈ 0,49 μF"],["E","≈ 4,9 pF"]],
+   a:"A", at:"≈ 0,49 nF",
+   ex:"C = 3,5 × 8,85×10⁻¹² × 7,85×10⁻³ / 5,0×10⁻⁴ ≈ <b>4,9×10⁻¹⁰ F = 0,49 nF</b>. Item (b) da 2ª questão (2º sem)."},
+  {t:"q", p:2, n:10, stem:"Um capacitor cilíndrico a vácuo tem C₀ = 16,5 pF. Preenchendo a camada de vácuo com titanato de estrôncio (κ = 233), a nova capacitância é:",
+   opts:[["A","≈ 3,8 nF"],["B","≈ 16,5 pF (κ não muda C)"],["C","≈ 0,07 pF"],["D","≈ 233 pF"],["E","≈ 38 μF"]],
+   a:"A", at:"≈ 3,8 nF",
+   ex:"C = κ·C₀ = 233 × 16,5 pF ≈ 3,84×10³ pF = <b>3,8 nF</b>. O dielétrico simplesmente multiplica C₀ por κ. Item (b) da 2ª questão (1º sem)."},
+  {t:"q", p:2, n:11, stem:"A madeira do capacitor (κ = 3,5, espessura d = 0,5 mm) tem rigidez dielétrica de 16 kV/mm. A máxima ddp que ele suporta sem queimar é:",
+   opts:[["A","8 kV"],["B","16 kV"],["C","32 kV"],["D","0,8 kV"],["E","3,5 kV"]],
+   a:"A", at:"V_max = E_rig·d = 8 kV",
+   ex:"V_max = E_rig · d = 16 kV/mm × 0,5 mm = <b>8 kV</b> (8000 V). Item (d) da 2ª questão (2º sem)."},
+  {t:"q", p:2, n:12, stem:"Com a BATERIA DESCONECTADA (Q fixo), insere-se um dielétrico κ num capacitor. Sobre E entre as placas, a ddp V e a capacitância C:",
+   opts:[["A","E cai (E₀/κ), V cai, C aumenta"],["B","E sobe, V sobe, C cai"],["C","tudo aumenta por κ"],["D","nada muda (Q é fixo)"],["E","E cai, V cai, C cai"]],
+   a:"A", at:"E → E₀/κ, V cai, C aumenta",
+   ex:"Q fixo: o dielétrico reduz o campo (E = E₀/κ), então V = E·d <b>cai</b> por κ. Como C = Q/V, com V menor o <b>C aumenta</b> por κ. A energia U = Q²/2C também <b>cai</b>."},
+
+  // ============================================================
+  // BLOCO 3 — CORRENTE ELÉTRICA
+  // ============================================================
+  // ---------- CONCEITOS ----------
+  {t:"c", p:3, term:"Corrente elétrica — definição e unidade",
+   ans:"Intensidade: <strong>i ≡ dQ/dt</strong> (carga que atravessa a seção por unidade de tempo).\nUnidade: <strong>ampère</strong>, <strong>1 A = 1 C/s</strong>.\nSentido convencional = o das cargas <strong>positivas</strong> (contrário ao dos elétrons)."},
+  {t:"c", p:3, term:"Densidade de corrente J",
+   ans:"<strong>J = i/A</strong> (corrente por área de seção reta).\nVetor no sentido do movimento das cargas positivas. i é grandeza <strong>global</strong>; J é <strong>local</strong> (ponto a ponto)."},
+  {t:"c", p:3, term:"Mesma corrente, áreas diferentes: quem tem maior J?",
+   ans:"Numa junção do mesmo fio a corrente i é <strong>igual</strong> nos dois lados (conservação de carga). Como J = i/A, a seção de <strong>menor área tem maior J</strong>. Menor área ⇒ elétrons mais 'apertados' ⇒ maior v_d."},
+  {t:"c", p:3, term:"Corrente em termos microscópicos",
+   ans:"<strong>i = η·A·v_d·e</strong>, com:\nη = elétrons livres por volume · A = área · v_d = velocidade de arraste (drift) · e = carga elementar.\nEquivale a <strong>J = η·e·v_d</strong>."},
+  {t:"c", p:3, term:"Densidade de portadores η (cobre)",
+   ans:"Elétrons livres por m³. Metal com <strong>1 elétron livre por átomo</strong>:\n<strong>η = ρ_massa · N_A / M</strong>.\nCobre: η = (8,92×10³ · 6,02×10²³)/(63,5×10⁻³) ≈ <strong>8,5×10²⁸ /m³</strong>."},
+  {t:"c", p:3, term:"Velocidade de drift — por que tão pequena?",
+   ans:"v_d é a velocidade <strong>média de arraste</strong> no campo (~10⁻⁴ m/s, fração de mm/s), muito menor que a velocidade térmica (~10⁶ m/s). Mesmo assim i é grande porque há <strong>muitíssimos</strong> portadores (η enorme)."},
+  {t:"c", p:3, term:"Por que a lâmpada acende 'na hora'?",
+   ans:"O que se propaga quase à <strong>velocidade da luz</strong> é o <strong>campo elétrico</strong> pelo fio — não os elétrons. O campo põe <strong>todos</strong> os elétrons do circuito em movimento quase ao mesmo tempo, apesar do v_d minúsculo."},
+
+  // ---------- QUESTÕES ----------
+  {t:"q", p:3, n:13, stem:"Fio de cobre (ρ = 8,92 g/cm³, M = 63,5 g/mol, 1 elétron livre por átomo, N_A = 6,02×10²³). A densidade volumétrica η de elétrons de condução ≈",
+   opts:[["A","8,5×10²⁸ /m³"],["B","8,5×10²² /m³"],["C","6,0×10²³ /m³"],["D","1,6×10¹⁹ /m³"],["E","8,9×10³ /m³"]],
+   a:"A", at:"≈ 8,5×10²⁸ elétrons/m³",
+   ex:"η = ρ·N_A/M = (8,92×10³ kg/m³ × 6,02×10²³)/(63,5×10⁻³ kg/mol) ≈ <b>8,5×10²⁸ /m³</b>. Cuidado com as unidades: ρ em kg/m³ e M em kg/mol. Item (a) da 4ª questão (1º sem)."},
+  {t:"q", p:3, n:14, stem:"Nesse mesmo fio (A = 3,31×10⁻⁶ m², i = 10,0 A, η ≈ 8,5×10²⁸ /m³, e = 1,6×10⁻¹⁹ C), a velocidade de drift v_d = i/(ηAe) ≈",
+   opts:[["A","≈ 2,2×10⁻⁴ m/s"],["B","≈ 2,2×10⁴ m/s"],["C","≈ 3,0×10⁸ m/s"],["D","≈ 10 m/s"],["E","≈ 0,5 m/s"]],
+   a:"A", at:"≈ 2,2×10⁻⁴ m/s (~0,2 mm/s)",
+   ex:"v_d = i/(ηAe) = 10 / (8,5×10²⁸ × 3,31×10⁻⁶ × 1,6×10⁻¹⁹) ≈ 10/(4,5×10⁴) ≈ <b>2,2×10⁻⁴ m/s</b> — pouquíssimos mm por segundo!"},
+  {t:"q", p:3, n:15, stem:"Diante de um v_d tão pequeno (~0,2 mm/s), por que a lâmpada acende praticamente ao acionar o interruptor?",
+   opts:[["A","o campo elétrico se propaga pelo fio quase à velocidade da luz, movendo todos os elétrons quase juntos"],["B","porque os elétrons viajam à velocidade da luz"],["C","porque já havia corrente antes de ligar"],["D","porque v_d na verdade é enorme"],["E","por causa da resistência do fio"]],
+   a:"A", at:"o campo (não os elétrons) se propaga ~à velocidade da luz",
+   ex:"Ao fechar o circuito, o <b>campo elétrico</b> se estabelece pelo fio quase instantaneamente e empurra <b>todos</b> os elétrons ao mesmo tempo. Os elétrons individualmente arrastam devagar, mas o efeito é imediato."},
+  {t:"q", p:3, n:16, stem:"Sobre densidade de corrente J = i/A, é INCORRETO afirmar:",
+   opts:[["A","é uma grandeza vetorial local (ponto a ponto)"],["B","tem o sentido do movimento das cargas positivas"],["C","numa junção, a seção mais estreita tem MENOR J"],["D","J = η·e·v_d"],["E","tem unidade A/m²"]],
+   a:"C", at:"a seção estreita tem MAIOR J (não menor)",
+   ex:"Com i fixo, a seção de <b>menor área</b> tem <b>maior</b> J (J = i/A). As demais estão certas."},
+
+  // ============================================================
+  // BLOCO 4 — RESISTÊNCIA E RESISTIVIDADE
+  // ============================================================
+  // ---------- CONCEITOS ----------
+  {t:"c", p:4, term:"Leis de Ohm (1826)",
+   ans:"<strong>1ª lei:</strong> ddp = R·i (⇔ i = V/R) — em material ôhmico R é constante.\n<strong>2ª lei:</strong> <strong>R = ρ·L/A</strong> — R cresce com o comprimento L e cai com a área A. ρ = resistividade (propriedade do material)."},
+  {t:"c", p:4, term:"Resistividade ρ × condutividade σ",
+   ans:"<strong>ρ</strong> = resistividade [Ω·m] — quão difícil é conduzir. <strong>σ = 1/ρ</strong> = condutividade.\nForma local da lei de Ohm: <strong>J = σE = E/ρ</strong>.\nCobre: ρ ≈ 1,7×10⁻⁸ Ω·m."},
+  {t:"c", p:4, term:"Modelo de Drude — dedução de ρ = m/(η e² τ)",
+   ans:"Elétron em MUV entre choques: v = v₀ − (eE/m)t. Média sobre N ≫ 1 choques: <strong>⟨v⟩ = eEτ/m</strong> (τ = tempo médio entre colisões).\nComo J = ηe⟨v⟩ = (ηe²τ/m)·E e J = E/ρ ⇒ <strong>ρ = m/(η e² τ)</strong>."},
+  {t:"c", p:4, term:"Tempo de relaxação τ",
+   ans:"τ = <strong>tempo médio entre duas colisões</strong> sucessivas do elétron com os íons da rede.\n<strong>Menor</strong> τ (mais colisões) ⇒ <strong>maior</strong> resistividade. Ordem de grandeza no cobre: ~10⁻¹⁴ s."},
+  {t:"c", p:4, term:"Resistividade × temperatura (metais)",
+   ans:"Aquecer o metal ⇒ rede vibra mais ⇒ mais colisões ⇒ <strong>τ diminui</strong> ⇒ <strong>ρ aumenta</strong> (quase linear com T). Nos <strong>semicondutores</strong> é o contrário: ρ cai com T (mais portadores)."},
+  {t:"c", p:4, term:"Por que R = ρL/A (intuição)",
+   ans:"Fio mais <strong>longo</strong> (L↑) → mais colisões → mais resistência.\nFio mais <strong>grosso</strong> (A↑) → mais 'pistas' em paralelo → menos resistência.\nρ carrega a dependência do material."},
+
+  // ---------- QUESTÕES ----------
+  {t:"q", p:4, n:17, stem:"Usando ρ = m/(η e² τ) para o cobre (m = 9,11×10⁻³¹ kg, η ≈ 8,5×10²⁸ /m³, e = 1,6×10⁻¹⁹ C, ρ = 1,7×10⁻⁸ Ω·m), o tempo médio entre colisões τ = m/(η e² ρ) ≈",
+   opts:[["A","≈ 2,5×10⁻¹⁴ s"],["B","≈ 2,5×10⁻⁸ s"],["C","≈ 1,7×10⁻⁸ s"],["D","≈ 10⁻³ s"],["E","≈ 2,5×10¹⁴ s"]],
+   a:"A", at:"≈ 2,5×10⁻¹⁴ s",
+   ex:"τ = m/(ηe²ρ) = 9,11×10⁻³¹ / (8,5×10²⁸ × (1,6×10⁻¹⁹)² × 1,7×10⁻⁸) ≈ 9,11×10⁻³¹/3,7×10⁻¹⁷ ≈ <b>2,5×10⁻¹⁴ s</b>. Item (b) da 4ª questão (2º sem)."},
+  {t:"q", p:4, n:18, stem:"Um fio ôhmico tem o comprimento TRIPLICADO, mantendo a área e o material. A resistência:",
+   opts:[["A","triplica"],["B","cai a 1/3"],["C","não muda"],["D","fica 9×"],["E","cai a 1/9"]],
+   a:"A", at:"triplica (R ∝ L)",
+   ex:"R = ρL/A ⇒ R é <b>proporcional a L</b>. Triplicar L triplica R."},
+  {t:"q", p:4, n:19, stem:"Dobra-se o DIÂMETRO de um fio (área fica 4×), mantendo L e o material. A resistência:",
+   opts:[["A","cai a 1/4"],["B","dobra"],["C","cai à metade"],["D","fica 4×"],["E","não muda"]],
+   a:"A", at:"cai a 1/4 (R ∝ 1/A)",
+   ex:"A = πr²: dobrar o diâmetro quadruplica a área. Como R = ρL/A ∝ 1/A, R fica <b>1/4</b> do valor."},
+  {t:"q", p:4, n:20, stem:"No modelo de Drude, ρ = m/(η e² τ). Ao aquecer o metal, o tempo entre colisões τ diminui. Logo a resistividade ρ:",
+   opts:[["A","aumenta"],["B","diminui"],["C","não muda"],["D","zera"],["E","fica negativa"]],
+   a:"A", at:"aumenta (τ↓ ⇒ ρ↑)",
+   ex:"τ está no <b>denominador</b>: se τ diminui, ρ <b>aumenta</b>. Por isso metais conduzem pior quando aquecidos."},
+];
+
+const BLK = {p:"★ prova real", "1":"capacitância", "2":"dielétricos", "3":"corrente", "4":"resistência"};
+function blkName(c){ return BLK[c.p] || ("bloco "+c.p); }
+
+const $ = s => document.querySelector(s);
+const card=$("#card"), front=$("#front"), back=$("#back"), empty=$("#empty");
+let order = CARDS.map((_,i)=>i);
+let deck="all", pdeck="all", hideKnown=false, cursor=0, flipped=false;
+const known = new Set();
+
+function deckMatch(id){
+  const c = CARDS[id];
+  return (deck==="all" || c.t===deck) && (pdeck==="all" || String(c.p)===pdeck);
+}
+function visible(){ return order.filter(id => deckMatch(id) && (!hideKnown || !known.has(id))); }
+
+function renderFront(c){
+  if(c.t==="c"){
+    return '<div class="tag"><span class="lbl">Conceito</span><span class="side">'+blkName(c)+'</span></div>'+
+           '<div class="term">'+c.term+'</div>'+
+           '<div class="hint">↺ toque para ver a resposta</div>';
+  }
+  const opts = c.opts.map(o=>'<li><span class="k">'+o[0]+'</span><span>'+o[1]+'</span></li>').join("");
+  return '<div class="tag"><span class="lbl">Questão '+c.n+'</span><span class="side">'+blkName(c)+'</span></div>'+
+         '<div class="stem">'+c.stem+'</div>'+
+         '<ul class="opts">'+opts+'</ul>'+
+         '<div class="hint">↺ toque para o gabarito</div>';
+}
+function renderBack(c){
+  if(c.t==="c"){
+    return '<div class="tag"><span class="lbl">Resposta</span><span class="side">'+blkName(c)+'</span></div>'+
+           '<div class="answer">'+c.ans.replace(/\n/g,"<br>")+'</div>';
+  }
+  const head = '<div class="tag"><span class="lbl">Gabarito · '+c.n+'</span><span class="side">'+blkName(c)+'</span></div>';
+  return head+
+         '<div class="gab"><span class="letter">'+c.a+'</span><span class="txt">'+c.at+'</span></div>'+
+         '<div class="explain">'+c.ex+'</div>';
+}
+
+function render(){
+  const vis = visible();
+  const total = vis.length;
+  document.querySelector(".stage").hidden = false;
+  if(total===0){
+    card.style.display="none"; empty.hidden=false;
+  }else{
+    card.style.display=""; empty.hidden=true;
+    if(cursor>=total) cursor=total-1;
+    if(cursor<0) cursor=0;
+    const id = vis[cursor], c = CARDS[id];
+    card.classList.remove("flip"); flipped=false;
+    card.classList.toggle("c", c.t==="c");
+    card.classList.toggle("q", c.t==="q");
+    card.classList.toggle("known", known.has(id));
+    front.innerHTML = renderFront(c);
+    back.innerHTML = renderBack(c);
+    card.dataset.id = id;
+  }
+  $("#pos").textContent = total? (cursor+1):0;
+  $("#total").textContent = total;
+  $("#progfill").style.width = total? (((cursor+1)/total)*100+"%") : "0%";
+  const deckIds = order.filter(deckMatch);
+  const dk = deckIds.filter(id=>known.has(id)).length;
+  $("#dom").textContent = "dominadas "+dk+"/"+deckIds.length;
+  $("#know").classList.toggle("on", total && known.has(vis[cursor]));
+  $("#hide").classList.toggle("on", hideKnown);
+}
+
+function flip(){ if(card.style.display==="none")return; flipped=!flipped; card.classList.toggle("flip",flipped); }
+function go(d){ const t=visible().length; if(!t)return; cursor=(cursor+d+t)%t; render(); }
+function markKnown(){
+  const vis=visible(); if(!vis.length)return;
+  const id=vis[cursor];
+  if(known.has(id)) known.delete(id); else known.add(id);
+  render();
+}
+function shuffle(){
+  let seed = (Date.now?Date.now():order.length*97) ^ (cursor*2654435761);
+  const rnd=()=>{ seed=(seed*1664525+1013904223)>>>0; return seed/4294967296; };
+  for(let i=order.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+  cursor=0; render();
+}
+
+document.querySelectorAll(".chip[data-deck]").forEach(ch=>ch.addEventListener("click",()=>{
+  document.querySelectorAll(".chip[data-deck]").forEach(x=>x.setAttribute("aria-pressed","false"));
+  ch.setAttribute("aria-pressed","true");
+  deck=ch.dataset.deck; cursor=0; render();
+}));
+document.querySelectorAll(".chip[data-pdeck]").forEach(ch=>ch.addEventListener("click",()=>{
+  document.querySelectorAll(".chip[data-pdeck]").forEach(x=>x.setAttribute("aria-pressed","false"));
+  ch.setAttribute("aria-pressed","true");
+  pdeck=ch.dataset.pdeck; cursor=0; render();
+}));
+card.addEventListener("click", flip);
+$("#flip").addEventListener("click", flip);
+$("#prev").addEventListener("click", ()=>go(-1));
+$("#next").addEventListener("click", ()=>go(1));
+$("#know").addEventListener("click", markKnown);
+$("#hide").addEventListener("click", ()=>{ hideKnown=!hideKnown; cursor=0; render(); });
+$("#shuffle").addEventListener("click", shuffle);
+$("#reset").addEventListener("click", ()=>{ known.clear(); hideKnown=false; deck="all"; pdeck="all";
+  document.querySelectorAll(".chip[data-deck]").forEach(x=>x.setAttribute("aria-pressed", x.dataset.deck==="all"?"true":"false"));
+  document.querySelectorAll(".chip[data-pdeck]").forEach(x=>x.setAttribute("aria-pressed", x.dataset.pdeck==="all"?"true":"false"));
+  order=CARDS.map((_,i)=>i); cursor=0; render(); });
+
+document.addEventListener("keydown",e=>{
+  const tag=(e.target.tagName||"");
+  if(e.key==="ArrowRight"){ go(1); e.preventDefault(); }
+  else if(e.key==="ArrowLeft"){ go(-1); e.preventDefault(); }
+  else if(e.key===" "||e.key==="Enter"){ if(tag==="BUTTON")return; flip(); e.preventDefault(); }
+  else if(e.key==="k"||e.key==="K"){ markKnown(); }
+  else if(e.key==="s"||e.key==="S"){ shuffle(); }
+});
+
+render();
+</script>
+</head><body></body></html>
