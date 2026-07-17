@@ -210,16 +210,16 @@ const QUESTIONS = [
     steps:[
       {b:"a", title:"Campo elétrico (Lei de Gauss)",
        prompt:"Tente: some/cancele o campo σ/2ε₀ de cada placa. Quanto vale E <b>entre</b> as placas? E <b>fora</b> delas?",
-       sol:"<p>Densidade σ = Q/A. Cada placa cria σ/2ε₀.</p><p class='m'><em>Fora:</em> os campos se cancelam ⇒ <b>E<sub>out</sub> = 0</b>\n<em>Entre:</em> se somam ⇒ <b>E<sub>in</sub> = σ/ε₀ = Q/(ε₀A)</b></p><p class='tip'>Gauss formal: cilindro com 1 tampa dentro do condutor (E=0) e outra entre as placas → E·A = σA/ε₀.</p>"},
+       sol:"<p><b>Ideia:</b> cada placa é um plano de carga, e um plano infinito de densidade σ cria um campo <b>uniforme</b> de módulo σ/2ε₀ (aponta para longe se for +).</p><p><b>Passo 1 — campo de UMA placa (Gauss).</b> Cilindro atravessando o plano, tampas de área A′ dos dois lados:</p><p class='m'>∮E·dA = q_int/ε₀\nE·A′ + E·A′ = σ·A′/ε₀\n2E = σ/ε₀  ⇒  E₁ = σ/2ε₀</p><p><b>Passo 2 — superpõe as duas placas.</b> A + empurra, a − puxa:</p><p class='m'><em>entre:</em>  E = σ/2ε₀ + σ/2ε₀ = σ/ε₀\n<em>fora:</em>   E = σ/2ε₀ − σ/2ε₀ = 0</p><p><b>Passo 3 —</b> escreve σ = Q/A:</p><span class='res'>E_in = Q/(ε₀A)   ·   E_out = 0</span><p class='tip'>A condição D ≪ √A é o que deixa as placas \"infinitas\" de perto ⇒ campo uniforme, sem vazar nas bordas.</p>"},
       {b:"b", title:"Potencial V(z), com z = 0 no meio",
        prompt:"Use E = −dV/dz e integre de 0 até z (com V(0)=0). Qual V(z)? E a ddp total ΔV?",
-       sol:"<p class='m'>V(z) = −∫E dz = −E·z ⇒ <b>V(z) = −(Q/ε₀A)·z</b>\n(válido −D/2 ≤ z ≤ D/2)\nddp: <b>ΔV = E·D = QD/(ε₀A)</b></p>"},
+       sol:"<p>Como E é <b>constante</b>, o potencial cai de forma <b>linear</b> em z. Relação em 1D: E = −dV/dz.</p><p><b>Passo 1 —</b> integra de 0 (onde V=0) até z:</p><p class='m'>V(z) − V(0) = −∫₀ᶻ E dz′ = −E·z</p><p><b>Passo 2 —</b> substitui E = Q/(ε₀A):</p><span class='res'>V(z) = −(Q/ε₀A)·z   (−D/2 ≤ z ≤ D/2)</span><p><b>Passo 3 — ddp entre as placas</b> (da + em z=−D/2 até a − em z=+D/2):</p><p class='m'>ΔV = V(−D/2) − V(+D/2) = E·D/2 + E·D/2 = E·D</p><span class='res'>ΔV = Q·D/(ε₀A)</span>"},
       {b:"c", title:"Capacitância", check:{a:null},
        prompt:"Junte tudo: C = Q/|ΔV|. Repare que o Q some.",
-       sol:"<p class='m'>C = Q ÷ [QD/(ε₀A)]</p><span class='res'>C = ε₀ A / D</span><p class='tip'>O Q sempre se cancela — só sobra geometria.</p>"},
+       sol:"<p><b>Passo 1 —</b> definição, com o ΔV do passo b:</p><p class='m'>C = Q/|ΔV| = Q ÷ (Q·D/ε₀A) = Q · ε₀A/(Q·D)</p><p><b>Passo 2 —</b> o Q cancela:</p><span class='res'>C = ε₀ A / D</span><p class='tip'>Termina sempre assim: C só depende da <b>geometria</b> (A, D) e do meio (ε₀). Dobrar D ⇒ metade do C.</p>"},
       {b:"coax", title:"Variante: cabo coaxial (se cair)",
        prompt:"Mesma receita para fio raio a (+Q) e casca raio b (−Q), comprimento ℓ. Lembra do campo 2kλ/r?",
-       sol:"<p class='m'><em>(a)</em> linhas radiais do fio(+) p/ casca(−), só entre a e b\n<em>(b)</em> Gauss: E·2πrℓ = Q/ε₀ ⇒ E = 2kλ/r\n<em>(c)</em> |ΔV| = ∫ₐᵇ E dr = 2kλ·ln(b/a)\n<em>(d)</em> C = Q/|ΔV| ⇒</p><span class='res'>C = ℓ / [2k·ln(b/a)] = 2πε₀ℓ/ln(b/a)</span>"},
+       sol:"<p>Define λ = Q/ℓ (carga por comprimento). Mesma receita: Gauss → integral → C.</p><p class='m'><em>(a)</em> linhas radiais do fio(+) p/ a casca(−), só entre a e b\n<em>(b)</em> Gauss (cilindro raio r, altura ℓ):\n     E·(2πrℓ) = Q/ε₀ ⇒ E = Q/(2πε₀ℓ·r) = 2kλ/r\n<em>(c)</em> |ΔV| = ∫ₐᵇ E dr = 2kλ ∫ₐᵇ dr/r = 2kλ·ln(b/a)\n<em>(d)</em> C = Q/|ΔV|, e 2kλ = 2kQ/ℓ ⇒</p><span class='res'>C = ℓ / [2k·ln(b/a)] = 2πε₀ℓ / ln(b/a)</span>"},
     ]
   },
 
@@ -229,19 +229,19 @@ const QUESTIONS = [
     steps:[
       {b:"a", title:"Mostrar que C = κ·ε₀·(πR²)/h",
        prompt:"Com dielétrico o campo cai por κ. Escreva E, depois ΔV = E·h, depois C = Q/ΔV.",
-       sol:"<p class='m'>E = E₀/κ = Q/(κε₀A)\nΔV = E·h = Qh/(κε₀A)\nC = Q/ΔV = κε₀A/h,  com A = πR² ⇒</p><span class='res'>C = κ ε₀ (πR²) / h</span>"},
+       sol:"<p><b>Ideia:</b> o dielétrico se polariza e cria um campo contrário, reduzindo o campo por um fator κ.</p><p><b>Passo 1 — campo com dielétrico:</b></p><p class='m'>E = E₀/κ = σ/(κε₀) = Q/(κε₀A)</p><p><b>Passo 2 — ddp</b> (campo uniforme na espessura h):</p><p class='m'>ΔV = E·h = Q·h/(κε₀A)</p><p><b>Passo 3 — capacitância</b> (o Q cancela):</p><p class='m'>C = Q/ΔV = Q · κε₀A/(Q·h) = κε₀A/h</p><p><b>Passo 4 —</b> placa circular, A = πR²:</p><span class='res'>C = κ ε₀ (πR²) / h</span>"},
       {b:"b", title:"Valor numérico de C", check:{a:4.9e-10, tol:0.15, unit:"F", ph:"ex: 4.9e-10"},
        prompt:"Plugue: κ=3,5 · ε₀=8,854×10⁻¹² · πR²=7,85×10⁻³ m² · h=5×10⁻⁴ m. Dá em F.",
-       sol:"<p class='m'>C = 3,5 × 8,854×10⁻¹² × 7,85×10⁻³ ÷ (5×10⁻⁴)</p><span class='res'>C ≈ 4,9×10⁻¹⁰ F = 0,49 nF</span>"},
+       sol:"<p><b>Passo 1 — tudo em SI:</b></p><p class='m'>R = 5 cm = 0,05 m ⇒ πR² = π(0,05)² = 7,85×10⁻³ m²\nh = 0,5 mm = 5×10⁻⁴ m\nκ = 3,5 ,  ε₀ = 8,854×10⁻¹²</p><p><b>Passo 2 — monta a fração:</b></p><p class='m'>C = (3,5 × 8,854×10⁻¹² × 7,85×10⁻³) ÷ (5×10⁻⁴)</p><p><b>Passo 3 — resolve por partes:</b></p><p class='m'>3,5 × 8,854×10⁻¹² = 3,10×10⁻¹¹\n× 7,85×10⁻³ = 2,43×10⁻¹³\n÷ 5×10⁻⁴ = 4,87×10⁻¹⁰</p><span class='res'>C ≈ 4,9×10⁻¹⁰ F = 0,49 nF</span>"},
       {b:"c", title:"Carga máxima com a pilha (1,5 V)", check:{a:7.3e-10, tol:0.15, unit:"C", ph:"ex: 7.3e-10"},
        prompt:"Carga num capacitor: Q = C·V, com V = 1,5 V.",
-       sol:"<p class='m'>Q = C·V = 4,9×10⁻¹⁰ × 1,5</p><span class='res'>Q ≈ 7,3×10⁻¹⁰ C = 0,73 nC</span>"},
+       sol:"<p>Ligado na pilha, a ddp entre as placas é a própria fem = 1,5 V. Da definição C = Q/V:</p><p class='m'>Q = C·V = 4,87×10⁻¹⁰ × 1,5</p><span class='res'>Q ≈ 7,3×10⁻¹⁰ C = 0,73 nC</span>"},
       {b:"d", title:"Máxima ddp sem queimar", check:{a:8000, tol:0.05, unit:"V", ph:"ex: 8000"},
        prompt:"A rigidez é o campo máximo antes de faiscar. V_max = E_rig·d, com d = 0,5 mm.",
-       sol:"<p class='m'>V<sub>max</sub> = E<sub>rig</sub>·d = 16 kV/mm × 0,5 mm</p><span class='res'>V<sub>max</sub> = 8 kV (8000 V)</span>"},
+       sol:"<p><b>O que é rigidez dielétrica:</b> o campo máximo que o material aguenta antes de \"furar\" e virar condutor (faísca).</p><p><b>Passo 1 — converte a rigidez:</b></p><p class='m'>E_rig = 16 kV/mm = 16×10³ V ÷ 10⁻³ m = 1,6×10⁷ V/m</p><p><b>Passo 2 —</b> campo uniforme ⇒ V = E·d:</p><p class='m'>V_max = E_rig·d = 1,6×10⁷ × 5×10⁻⁴</p><span class='res'>V_max = 8000 V = 8 kV</span><p class='tip'>A pilha só dá 1,5 V — folga gigante, esse capacitor nunca queima na prática.</p>"},
       {b:"var", title:"Variante: cilíndrico + titanato (κ=233)",
        prompt:"Se cair o coaxial: acha C₀ do cilíndrico e multiplica por κ.",
-       sol:"<p class='m'>(a) C₀ = 2πε₀ℓ/ln(b/a) ≈ 16,5 pF\n(b) C = κC₀ = 233 × 16,5 pF ≈ <b>3,8 nF</b>\n(c) campo máx em r=a ⇒ V<sub>max</sub> = E<sub>rig</sub>·a·ln(b/a)</p>"},
+       sol:"<p>Mesmo raciocínio, só que o C base é o do cilíndrico:</p><p class='m'>(a) C₀ = 2πε₀ℓ/ln(b/a) ≈ 16,5 pF\n(b) com dielétrico: C = κ·C₀ = 233 × 16,5 pF ≈ 3,8 nF\n(c) no cilíndrico o campo é máximo em r=a ⇒\n     V_max = E_rig · a · ln(b/a)</p>"},
     ]
   },
 
@@ -251,13 +251,13 @@ const QUESTIONS = [
     steps:[
       {b:"a", title:"Densidade η de elétrons de condução", check:{a:8.5e28, tol:0.15, unit:"e⁻/m³", ph:"ex: 8.5e28"},
        prompt:"1 elétron por átomo: η = ρ·N_A/M. Cuidado nas unidades: ρ=8,92×10³ kg/m³, M=63,5×10⁻³ kg/mol.",
-       sol:"<p class='m'>η = (8,92×10³ × 6,02×10²³) ÷ (63,5×10⁻³)</p><span class='res'>η ≈ 8,5×10²⁸ elétrons/m³</span>"},
+       sol:"<p><b>O que é η:</b> nº de elétrons livres por m³. O cobre é monovalente ⇒ <b>1 elétron livre por átomo</b>, então η = (átomos por m³).</p><p><b>Passo 1 — montar a fórmula.</b> Átomos/m³ = (massa/volume) ÷ (massa de 1 átomo), e a massa de 1 átomo = M/N_A:</p><p class='m'>η = ρ ÷ (M/N_A) = ρ·N_A / M</p><p><b>Passo 2 — unidades em SI:</b></p><p class='m'>ρ = 8,92 g/cm³ = 8,92×10³ kg/m³\nM = 63,5 g/mol = 63,5×10⁻³ kg/mol</p><p><b>Passo 3 — calcula:</b></p><p class='m'>numerador = 8,92×10³ × 6,02×10²³ = 5,37×10²⁷\nη = 5,37×10²⁷ ÷ 63,5×10⁻³</p><span class='res'>η ≈ 8,5×10²⁸ elétrons/m³</span>"},
       {b:"b", title:"Velocidade de drift v_d", check:{a:2.2e-4, tol:0.2, unit:"m/s", ph:"ex: 2.2e-4"},
        prompt:"De i = η·A·v_d·e, isole v_d = i/(η·A·e). Use η do passo anterior.",
-       sol:"<p class='m'>v_d = 10 ÷ (8,5×10²⁸ × 3,31×10⁻⁶ × 1,6×10⁻¹⁹)\n= 10 / (4,5×10⁴)</p><span class='res'>v_d ≈ 2,2×10⁻⁴ m/s (~0,2 mm/s!)</span>"},
+       sol:"<p><b>De onde vem i = η·A·v_d·e:</b> num tempo dt, os elétrons de um cilindro de comprimento v_d·dt atravessam a seção A. A carga é (η·A·v_d·dt)·e ⇒ i = ηAv_d·e.</p><p><b>Passo 1 — isola v_d:</b></p><p class='m'>v_d = i / (η·A·e)</p><p><b>Passo 2 — resolve o denominador</b> (multiplica mantissas, soma expoentes):</p><p class='m'>8,5×10²⁸ × 3,31×10⁻⁶ × 1,6×10⁻¹⁹\n= (8,5 × 3,31 × 1,6) × 10^(28−6−19)\n= 45,0 × 10³ = 4,5×10⁴</p><p><b>Passo 3 — divide:</b></p><p class='m'>v_d = 10 ÷ 4,5×10⁴</p><span class='res'>v_d ≈ 2,2×10⁻⁴ m/s (~0,22 mm/s)</span><p class='tip'>A pegadinha é a conta dos expoentes: 10^(28−6−19) = 10³. Erre isso e o resultado explode.</p>"},
       {b:"c", title:"Por que a lâmpada acende na hora?",
        prompt:"Se v_d é ~0,2 mm/s, o que faz a lâmpada acender instantaneamente? (dica: não são os elétrons que 'viajam')",
-       sol:"<p>O que se propaga pelo fio é o <b>campo elétrico</b>, a quase a <b>velocidade da luz</b>. Ele põe <b>todos</b> os elétrons do circuito em movimento quase ao mesmo tempo — não é um elétron que viaja do interruptor até a lâmpada.</p>"},
+       sol:"<p>Repara no contraste: a velocidade de arraste é ~0,2 mm/s (um elétron levaria horas para ir do interruptor à lâmpada), mas a lâmpada acende <b>na hora</b>.</p><p>O que se propaga pelo fio é o <b>campo elétrico</b>, a quase a <b>velocidade da luz</b> (~3×10⁸ m/s). Ele coloca <b>todos</b> os elétrons do circuito — inclusive os que já estão no filamento — em movimento quase ao mesmo tempo.</p><p class='tip'>Resumo da resposta: não é um elétron que viaja até a lâmpada; é o campo que \"avisa\" todos os elétrons quase instantaneamente.</p>"},
     ]
   },
 
@@ -267,13 +267,13 @@ const QUESTIONS = [
     steps:[
       {b:"a1", title:"Lado macroscópico → J = E/ρ",
        prompt:"Combine R = ρL/A com J = i/A e ddp = E·L. Chegue em J em função de E e ρ.",
-       sol:"<p class='m'>J = i/A = ddp/(R·A) = ddp/(ρL)   [R·A = ρL]\nddp = E·L ⇒ J = E·L/(ρL)</p><p class='m'><b>J = E/ρ</b>   … (i)</p>"},
+       sol:"<p><b>Meta:</b> escrever a densidade de corrente J só em função do campo E e da resistividade ρ.</p><p><b>Passo 1 — 2ª lei de Ohm:</b> R = ρL/A (L = comprimento, A = seção).</p><p><b>Passo 2 — densidade de corrente</b> usando a 1ª lei i = ddp/R:</p><p class='m'>J = i/A = ddp/(R·A)</p><p><b>Passo 3 — substitui R·A = ρL:</b></p><p class='m'>J = ddp/(ρL)</p><p><b>Passo 4 — campo uniforme ⇒ ddp = E·L:</b></p><p class='m'>J = E·L/(ρL) = E/ρ</p><span class='res'>J = E/ρ   … (i)</span>"},
       {b:"a2", title:"Lado microscópico (Drude) → resultado",
        prompt:"MUV entre choques: v = v₀ − (eE/m)t. Tire a média (⟨v₀⟩=0, ⟨t⟩=τ), monte J = ηe⟨v⟩ e compare com (i).",
-       sol:"<p class='m'>⟨v⟩ = eEτ/m\nJ = η·e·⟨v⟩ = (ηe²τ/m)·E   … (ii)\n(i)=(ii): 1/ρ = ηe²τ/m ⇒</p><span class='res'>ρ = m / (η e² τ)</span>"},
+       sol:"<p><b>Meta:</b> escrever o MESMO J pelo lado dos elétrons e comparar com (i).</p><p><b>Passo 1 — força e aceleração:</b> F = −eE ⇒ a = −eE/m.</p><p><b>Passo 2 — MUV entre dois choques</b> (o elétron sai com v₀ aleatório e acelera até bater):</p><p class='m'>v = v₀ − (eE/m)·t</p><p><b>Passo 3 — média sobre muitos choques:</b> ⟨v₀⟩ = 0 (direções aleatórias) e ⟨t⟩ = τ:</p><p class='m'>⟨v⟩ = (eE/m)·τ   (módulo)</p><p><b>Passo 4 — densidade de corrente micro:</b></p><p class='m'>J = η·e·⟨v⟩ = η·e·(eEτ/m) = (ηe²τ/m)·E   … (ii)</p><p><b>Passo 5 — iguala (i) e (ii)</b> e corta o E:</p><p class='m'>E/ρ = (ηe²τ/m)·E ⇒ 1/ρ = ηe²τ/m</p><span class='res'>ρ = m / (η e² τ)</span>"},
       {b:"b", title:"Estimar τ do cobre", check:{a:2.5e-14, tol:0.2, unit:"s", ph:"ex: 2.5e-14"},
        prompt:"Isole τ = m/(η e² ρ). Use m=9,11×10⁻³¹, η=8,5×10²⁸, e=1,6×10⁻¹⁹, ρ=1,7×10⁻⁸.",
-       sol:"<p class='m'>τ = 9,11×10⁻³¹ ÷ (8,5×10²⁸ × (1,6×10⁻¹⁹)² × 1,7×10⁻⁸)</p><span class='res'>τ ≈ 2,5×10⁻¹⁴ s</span>"},
+       sol:"<p><b>Passo 1 — isola τ</b> de ρ = m/(ηe²τ):</p><p class='m'>τ = m / (η e² ρ)</p><p><b>Passo 2 — calcula e² primeiro:</b></p><p class='m'>e² = (1,6×10⁻¹⁹)² = 2,56×10⁻³⁸</p><p><b>Passo 3 — denominador</b> (mantissas ×, expoentes +):</p><p class='m'>8,5×10²⁸ × 2,56×10⁻³⁸ × 1,7×10⁻⁸\n= (8,5 × 2,56 × 1,7) × 10^(28−38−8)\n= 37,0 × 10⁻¹⁸ = 3,7×10⁻¹⁷</p><p><b>Passo 4 — divide</b> (m = massa do elétron = 9,11×10⁻³¹ kg):</p><p class='m'>τ = 9,11×10⁻³¹ ÷ 3,7×10⁻¹⁷</p><span class='res'>τ ≈ 2,5×10⁻¹⁴ s</span>"},
     ]
   },
 
@@ -283,13 +283,13 @@ const QUESTIONS = [
     steps:[
       {b:"1", title:"Paralelo (C_p = C₁ + C₂)",
        prompt:"Os dois têm a mesma ddp ℰ. Some as cargas e divida por ℰ.",
-       sol:"<p class='m'>Q = Q₁ + Q₂ = C₁ℰ + C₂ℰ = (C₁+C₂)ℰ\nQ = C_p·ℰ ⇒</p><span class='res'>C_p = C₁ + C₂  (maior que qualquer um)</span>"},
+       sol:"<p><b>Montagem:</b> os dois ligados entre os mesmos dois pontos ⇒ <b>mesma ddp</b> ℰ. Cada um guarda sua carga:</p><p class='m'>Q₁ = C₁ℰ ,  Q₂ = C₂ℰ</p><p><b>Passo 1 — a bateria fornece a carga total:</b></p><p class='m'>Q = Q₁ + Q₂ = C₁ℰ + C₂ℰ = (C₁ + C₂)·ℰ</p><p><b>Passo 2 — mas Q = C_p·ℰ.</b> Iguala e corta ℰ:</p><span class='res'>C_p = C₁ + C₂  (maior que qualquer um)</span>"},
       {b:"2", title:"Série (1/C_s = 1/C₁ + 1/C₂)",
        prompt:"A carga Q é a MESMA nos dois. Some as ddps: ℰ = Q/C₁ + Q/C₂.",
-       sol:"<p class='m'>ℰ = Q/C₁ + Q/C₂ = Q(1/C₁ + 1/C₂)\nℰ = Q/C_s ⇒</p><span class='res'>1/C_s = 1/C₁ + 1/C₂ ⇒ C_s = C₁C₂/(C₁+C₂)</span>"},
+       sol:"<p><b>Montagem:</b> um atrás do outro. A placa do meio é neutra e só induz cargas ⇒ <b>mesma carga Q</b> nos dois. A fem se reparte:</p><p class='m'>ℰ = ΔV₁ + ΔV₂</p><p><b>Passo 1 — cada ddp é ΔV = Q/C:</b></p><p class='m'>ℰ = Q/C₁ + Q/C₂ = Q·(1/C₁ + 1/C₂)</p><p><b>Passo 2 — mas ℰ = Q/C_s.</b> Iguala e corta Q:</p><span class='res'>1/C_s = 1/C₁ + 1/C₂ ⇒ C_s = C₁C₂/(C₁+C₂)</span>"},
       {b:"3", title:"Ordenação C_s < C₁ < C₂ < C_p",
        prompt:"Dado C₁<C₂, mostre por que a série fica abaixo do menor e o paralelo acima do maior.",
-       sol:"<p class='m'><em>Paralelo:</em> C_p = C₁+C₂ > C₂ ✓\n<em>Série:</em> C_s = C₁C₂/(C₁+C₂); C₂/(C₁+C₂) < 1 ⇒ C_s < C₁ ✓</p><span class='res'>C_s < C₁ < C₂ < C_p</span>"},
+       sol:"<p><b>Paralelo</b> — é soma, então passa do maior:</p><p class='m'>C_p = C₁ + C₂ > C₂  ✓</p><p><b>Série</b> — escreve C_s destacando C₁ e compara:</p><p class='m'>C_s = C₁·[C₂/(C₁+C₂)]\ncomo C₂/(C₁+C₂) < 1 ⇒ C_s < C₁  ✓</p><span class='res'>C_s < C₁ < C₂ < C_p</span>"},
     ],
     checklist:[
       "η cobre = <b>8,5×10²⁸</b> · v<sub>d</sub> = <b>2,2×10⁻⁴ m/s</b> · τ = <b>2,5×10⁻¹⁴ s</b>",
